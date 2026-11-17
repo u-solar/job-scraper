@@ -209,6 +209,30 @@ async function testPersonioRecruitee() {
   assert.equal(bySlug?.company, "bunq");
   assert.equal((await withFixtures(rbRoutes, () => recruitee.getJob("bunq", sec.job_id.split("_").pop()!)))?.job_id, sec.job_id);
   assert.equal(await withFixtures(rbRoutes, () => recruitee.getJob("bunq", "nope")), null);
+  // keyword-positive path and limit (helpling-two: two described positions)
+  const two = { [PDE]: "404", [PCOM]: "personio/helpling-two.xml" };
+  const kw = await withFixtures(two, () => personio.listJobs("helpling", ["Product Designer"]));
+  assert.deepStrictEqual(kw.map((j) => j.job_title), ["Product Designer (m/w/d)"]);
+  assert.equal((await withFixtures(two, () => personio.listJobs("helpling", []))).length, 2);
+  assert.equal((await withFixtures(two, () => personio.listJobs("helpling", [], { limit: 1 }))).length, 1);
+
+  // HTML error pages and empty boards
+  const html = "personio/html.html";
+  const deHtml = { [PDE]: html, [PCOM]: "personio/helpling.xml" };
+  assert.equal((await withFixtures(deHtml, () => personio.listPostings("helpling")))!.length, 1);
+  assert.equal(await withFixtures({ [PDE]: html, [PCOM]: html }, () => personio.listPostings("helpling")), null);
+  assert.deepStrictEqual(await withFixtures({ [PDE]: html, [PCOM]: html }, () => personio.listJobs("helpling", [])), []);
+  assert.deepStrictEqual(await withFixtures({ [PDE]: "personio/empty.xml" }, () => personio.listPostings("helpling")), []);
+  assert.equal(await withFixtures({ [RB]: "recruitee/html.html" }, () => recruitee.listPostings("bunq")), null);
+  assert.deepStrictEqual(await withFixtures({ [RB]: "recruitee/html.html" }, () => recruitee.listJobs("bunq", [])), []);
+  assert.deepStrictEqual(await withFixtures({ [RB]: "recruitee/empty.json" }, () => recruitee.listPostings("bunq")), []);
+
+  // Recruitee: garbage dates do not abort the board; an offer with no slug and no careers_url is skipped
+  const edge = { [RB]: "recruitee/bunq-edge.json" };
+  const ej = await withFixtures(edge, () => recruitee.listJobs("bunq", []));
+  assert.equal(ej.length, 1);
+  assert.ok(!isNaN(Date.parse(ej[0].posted_at!)) && new Date(ej[0].posted_at!).toISOString() === ej[0].posted_at);
+  assert.equal((await withFixtures(edge, () => recruitee.listPostings("bunq")))!.length, 1);
   console.log("ok  personio + recruitee");
 }
 

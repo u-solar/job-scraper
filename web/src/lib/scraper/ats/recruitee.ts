@@ -21,7 +21,8 @@ interface RecruiteeOffer {
 
 const cleanSlug = (s: string) => s.trim().toLowerCase();
 const companyOf = (slug: string, o: RecruiteeOffer) => o.company_name?.trim() || companyFromSlug(slug);
-const urlOf = (slug: string, o: RecruiteeOffer) => o.careers_url || `https://${slug}.recruitee.com/o/${o.slug}`;
+const urlOf = (slug: string, o: RecruiteeOffer) => o.careers_url || (o.slug ? `https://${slug}.recruitee.com/o/${o.slug}` : null);
+const validIso = (v?: string) => { const d = v ? new Date(v) : null; return d && !isNaN(d.getTime()) ? d.toISOString() : null; };
 
 async function fetchBoard(slug: string, timeout = LIST_TIMEOUT_MS): Promise<RecruiteeOffer[] | null> {
   try {
@@ -45,11 +46,11 @@ async function listPostings(companySlug: string): Promise<AtsPosting[] | null> {
   const slug = cleanSlug(companySlug);
   const raw = await fetchBoard(slug);
   if (!raw) return null;
-  return raw.map((o) => ({
+  return raw.filter((o) => urlOf(slug, o)).map((o) => ({
     id: String(o.id),
     title: o.title?.trim() || "",
     department: o.department || undefined,
-    url: urlOf(slug, o),
+    url: urlOf(slug, o)!,
     companyName: companyOf(slug, o),
   }));
 }
@@ -57,7 +58,8 @@ async function listPostings(companySlug: string): Promise<AtsPosting[] | null> {
 function toJob(slug: string, o: RecruiteeOffer): ScrapedJob | null {
   const title = o.title?.trim() || "";
   const markdown = convertHtmlToMarkdown(`${o.description || ""}${o.requirements || ""}`);
-  if (!title || !markdown?.trim()) return null;
+  const url = urlOf(slug, o);
+  if (!title || !url || !markdown?.trim()) return null;
   const loc = o.location?.trim() || "Not specified";
   return {
     job_id: `recruitee_${slug}_${o.id}`,
@@ -67,9 +69,9 @@ function toJob(slug: string, o: RecruiteeOffer): ScrapedJob | null {
     level: "Full-time",
     provider: "recruitee",
     description: markdown,
-    posted_at: new Date(o.published_at || o.created_at || Date.now()).toISOString(),
+    posted_at: validIso(o.published_at) || validIso(o.created_at) || new Date().toISOString(),
     workplace_type: o.remote ? "remote" : o.hybrid ? "hybrid" : workplaceFromText(title, loc, markdown),
-    application_url: urlOf(slug, o),
+    application_url: url,
   };
 }
 
