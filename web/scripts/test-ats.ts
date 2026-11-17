@@ -100,6 +100,53 @@ async function main() {
     assert.equal(new Set(ids).size, ids.length, `duplicate job_ids for ${entries.join(" + ")}`);
     assert.deepStrictEqual(ids, urlOnly.map((j) => j.job_id), `slug+URL differs from URL alone for ${entries.join(" + ")}`);
   }
+  // Counts fetch calls per URL substring while fixtures are installed.
+  async function countCalls<T>(routes: Record<string, string>, fn: () => Promise<T>): Promise<{ result: T; urls: string[] }> {
+    const urls: string[] = [];
+    const result = await withFixtures(routes, async () => {
+      const inner = globalThis.fetch;
+      globalThis.fetch = ((input: any, init?: any) => {
+        urls.push(typeof input === "string" ? input : input.url ?? String(input));
+        return inner(input, init);
+      }) as typeof fetch;
+      try {
+        return await fn();
+      } finally {
+        globalThis.fetch = inner;
+      }
+    });
+    return { result, urls };
+  }
+  const ASHBY_BOARD = "https://api.ashbyhq.com/posting-api/job-board/n8n";
+  for (const entries of [
+    ["n8n", "https://jobs.ashbyhq.com/n8n"],
+    ["https://jobs.ashbyhq.com/n8n", "n8n"],
+    ["https://jobs.ashbyhq.com/n8n", "https://jobs.ashbyhq.com/n8n/"],
+  ]) {
+    const { urls } = await countCalls(n8nRoutes, () => scrapeTargetCompanies(entries, ["Product Designer"]));
+    assert.equal(urls.filter((u) => u.startsWith(ASHBY_BOARD)).length, 1, `ashby board fetched once for ${entries.join(" + ")}`);
+  }
+
+  // Bare slug: a fully-saved Greenhouse board still ends the probe (no Lever/Ashby calls).
+  const bpRoutes = goldenCases.find((c) => c.name === "greenhouse-bitpanda-all")!.routes;
+  const bpIds: string[] = JSON.parse(fs.readFileSync(path.join(GOLDEN_DIR, "greenhouse-bitpanda-all.json"), "utf8")).map((j: any) => j.job_id);
+  assert.ok(bpIds.length > 1);
+  const { result: bpSkipped, urls: bpUrls } = await countCalls(bpRoutes, () =>
+    scrapeTargetCompanies(["bitpanda"], [], { skipJobIds: new Set(bpIds) })
+  );
+  assert.equal(bpSkipped.length, 0);
+  assert.equal(bpUrls.filter((u) => /lever\.co|ashbyhq\.com/.test(u)).length, 0);
+  const bpLimited = await withFixtures(bpRoutes, () => scrapeTargetCompanies(["bitpanda"], [], { skipJobIds: new Set([bpIds[0]]), limit: 1 }));
+  assert.deepStrictEqual(bpLimited.map((j) => j.job_id), [bpIds[1]]);
+
+  // www. and language-prefixed paths
+  assert.deepStrictEqual(parseAtsUrl("https://www.kiska.softgarden.io/en/job/68673563/x"), { providerId: "softgarden", slug: "kiska", jobId: "68673563" });
+  assert.deepStrictEqual(parseAtsUrl("https://www.jobs.ashbyhq.com/n8n"), { providerId: "ashby", slug: "n8n" });
+  assert.deepStrictEqual(parseAtsUrl("https://fronius.jobs.personio.de/en/job/123"), { providerId: "personio", slug: "fronius", jobId: "123" });
+  assert.deepStrictEqual(parseAtsUrl("https://fronius.jobs.personio.de/job/123"), { providerId: "personio", slug: "fronius", jobId: "123" });
+  assert.deepStrictEqual(parseAtsUrl("https://acme.recruitee.com/de-at/o/product-designer"), { providerId: "recruitee", slug: "acme", jobId: "product-designer" });
+  assert.deepStrictEqual(parseAtsUrl("https://apply.workable.com/en/acme/j/ABC123/"), { providerId: "workable", slug: "acme", jobId: "ABC123" });
+  assert.deepStrictEqual(parseAtsUrl("https://apply.workable.com/ab/j/ABC123/"), { providerId: "workable", slug: "ab", jobId: "ABC123" });
   console.log("ok  registry scrape");
 }
 

@@ -48,18 +48,22 @@ export async function scrapeTargetCompanies(
         continue;
       }
       if (isUrl) scraped.add(key);
-      const found = (
-        await provider.listJobs(resolved.slug, keywords, {
-          limit: max === Infinity ? undefined : max - all.length,
-          skipJobIds: opts.skipJobIds,
-        })
-      ).filter((j) => !seenJobIds.has(j.job_id));
-      if (found.length > 0) {
-        scraped.add(key);
-        found.forEach((j) => seenJobIds.add(j.job_id));
-        all.push(...found);
-        break;
-      }
+      const room = max - all.length;
+      // URL entries push skip/limit down. Bare slugs probe unfiltered so a fully-saved board still
+      // stops the fall-through (no cross-company slug collisions), then skip/limit are applied here.
+      const listed = await provider.listJobs(
+        resolved.slug,
+        keywords,
+        isUrl ? { limit: room === Infinity ? undefined : room, skipJobIds: opts.skipJobIds } : undefined
+      );
+      if (listed.length === 0) continue;
+      scraped.add(key);
+      const fresh = listed
+        .filter((j) => !opts.skipJobIds?.has(j.job_id) && !seenJobIds.has(j.job_id))
+        .slice(0, room);
+      fresh.forEach((j) => seenJobIds.add(j.job_id));
+      all.push(...fresh);
+      break;
     }
   }
   return all.slice(0, max);

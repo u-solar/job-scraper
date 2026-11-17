@@ -29,6 +29,7 @@ export interface ParsedAtsUrl {
 }
 
 const SLUG_RE = /^[a-z0-9_-]+$/i;
+const LANG_RE = /^[a-z]{2}(-[a-z]{2})?$/i;
 const UUID_RE = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
 function toUrl(input: string): URL | null {
@@ -44,8 +45,10 @@ function toUrl(input: string): URL | null {
 export function parseAtsUrl(input: string): ParsedAtsUrl | null {
   const u = toUrl(input);
   if (!u) return null;
-  const host = u.hostname.toLowerCase();
+  const host = u.hostname.toLowerCase().replace(/^www\./, "");
   const seg = u.pathname.split("/").filter(Boolean);
+  // Language-prefixed paths (/en/job/…, /de-at/o/…) for hosts where the slug is in the hostname.
+  const noLang = LANG_RE.test(seg[0] ?? "") ? seg.slice(1) : seg;
   const make = (providerId: AtsProviderId, slug: string | undefined, jobId?: string): ParsedAtsUrl | null =>
     slug
       ? { providerId, slug: providerId === "smartrecruiters" ? slug : slug.toLowerCase(), ...(jobId ? { jobId } : {}) }
@@ -61,22 +64,24 @@ export function parseAtsUrl(input: string): ParsedAtsUrl | null {
   if (host === "jobs.ashbyhq.com") return make("ashby", seg[0], seg[1] && UUID_RE.test(seg[1]) ? seg[1] : undefined);
 
   let m = host.match(/^([a-z0-9-]+)\.jobs\.personio\.(de|com)$/);
-  if (m) return make("personio", m[1], seg[0] === "job" ? seg[1] : undefined);
+  if (m) return make("personio", m[1], noLang[0] === "job" ? noLang[1] : undefined);
 
   m = host.match(/^([a-z0-9-]+)\.softgarden\.io$/);
   if (m) {
-    // optional language segment before /job/{id}
-    const i = seg.indexOf("job");
-    return make("softgarden", m[1], i >= 0 && i <= 1 ? seg[i + 1] : undefined);
+    return make("softgarden", m[1], noLang[0] === "job" ? noLang[1] : undefined);
   }
 
   m = host.match(/^([a-z0-9-]+)\.recruitee\.com$/);
-  if (m) return make("recruitee", m[1], seg[0] === "o" ? seg[1] : undefined);
+  if (m) return make("recruitee", m[1], noLang[0] === "o" ? noLang[1] : undefined);
 
   if (/^(jobs|careers)\.smartrecruiters\.com$/.test(host)) {
     return make("smartrecruiters", seg[0], seg[1]?.match(/^\d+/)?.[0] ?? seg[1]);
   }
-  if (host === "apply.workable.com") return make("workable", seg[0], seg[1] === "j" ? seg[2] : undefined);
+  if (host === "apply.workable.com") {
+    // /en/{slug}/j/{code}: only a language prefix when "j" follows the next segment, so 2-letter slugs still work
+    const w = LANG_RE.test(seg[0] ?? "") && seg[2] === "j" ? seg.slice(1) : seg;
+    return make("workable", w[0], w[1] === "j" ? w[2] : undefined);
+  }
   return null;
 }
 
