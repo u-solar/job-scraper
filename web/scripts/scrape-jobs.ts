@@ -15,10 +15,12 @@ import {
   processLinkedInQuery,
   processCareersFutureQuery,
   scrapeTargetCompanies,
+  getExistingJobsCache,
   fetchRemoteOkJobs,
   saveJobsToSupabase,
   SAFE_MAX_SCRAPE_PER_SOURCE,
 } from "../src/lib/scraper";
+import { ATS_PROVIDER_IDS } from "../src/lib/scraper/ats/urls";
 import { withTelemetry } from "../src/lib/telemetry";
 
 function sleep(ms: number) {
@@ -315,7 +317,7 @@ async function runScraper(ctx?: any) {
     console.log("\nℹ️ Skipping CareersFuture Scraping (disabled in arguments / settings).");
   }
 
-  // 3. Direct ATS Target Companies (Greenhouse / Lever / Ashby)
+  // 3. Direct ATS Target Companies (all registered ATS platforms)
   const targetCompanies = settings.targetAtsCompanies || [];
   if (activeSources.includes("ats")) {
     console.log("\n============= Starting Direct ATS Scraping (Target Companies) =============");
@@ -334,7 +336,7 @@ async function runScraper(ctx?: any) {
         const { count, error } = await supabase
           .from("jobs")
           .select("job_id", { count: "exact", head: true })
-          .in("provider", ["greenhouse", "lever", "ashby"])
+          .in("provider", ATS_PROVIDER_IDS)
           .gte("scraped_at", todayStart.toISOString());
         if (!error && typeof count === "number") {
           alreadyScrapedToday = count;
@@ -357,7 +359,10 @@ async function runScraper(ctx?: any) {
         console.log(`[Direct ATS] Daily safety limit of ${dailyTarget} jobs already reached today. Halting Direct ATS scraping.`);
       } else {
         const queries = cli.query ? [cli.query] : settings.linkedinQueries;
-        const atsJobs = await scrapeTargetCompanies(targetCompanies, queries, remainingDailyTarget);
+        const atsJobs = await scrapeTargetCompanies(targetCompanies, queries, {
+          limit: remainingDailyTarget,
+          skipJobIds: (await getExistingJobsCache(supabase)).existingIds,
+        });
         if (atsJobs.length > 0) {
           if (!cli.dryRun) {
             const savedCount = await saveJobsToSupabase(supabase, atsJobs);

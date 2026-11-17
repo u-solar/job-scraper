@@ -1,14 +1,8 @@
 import type { ScrapedJob } from "../types";
 
-export type AtsProviderId =
-  | "greenhouse"
-  | "lever"
-  | "ashby"
-  | "personio"
-  | "softgarden"
-  | "recruitee"
-  | "smartrecruiters"
-  | "workable";
+import type { AtsProviderId } from "./urls";
+
+export type { AtsProviderId };
 
 export interface AtsPosting {
   id: string;

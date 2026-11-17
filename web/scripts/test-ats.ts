@@ -5,6 +5,8 @@ import { GOLDEN_DIR, goldenCases, installFixtureFetch, normalizeNow } from "./fi
 import { ashby } from "../src/lib/scraper/ats/ashby";
 import { greenhouse } from "../src/lib/scraper/ats/greenhouse";
 import { lever } from "../src/lib/scraper/ats/lever";
+import { describeCompanyEntry, parseAtsUrl } from "../src/lib/scraper/ats/urls";
+import { scrapeTargetCompanies } from "../src/lib/scraper/ats/registry";
 import type { AtsProvider } from "../src/lib/scraper/ats/types";
 
 const providers: Record<string, AtsProvider> = { greenhouse, lever, ashby };
@@ -49,6 +51,47 @@ async function main() {
   assert.equal(skipped.length, 5);
   assert.ok(!skipped.some((j) => j.job_id === skipId));
   console.log("ok  listPostings / limit / skipJobIds");
+
+  // URL recognition
+  assert.deepStrictEqual(parseAtsUrl("https://jobs.ashbyhq.com/n8n/fe05c209-8069-4a88-aeba-8da23488cd30"), { providerId: "ashby", slug: "n8n", jobId: "fe05c209-8069-4a88-aeba-8da23488cd30" });
+  for (const u of ["kiska.softgarden.io", "https://KISKA.softgarden.io/en/vacancies?x=1", "https://kiska.softgarden.io/job/68673563/Senior-UX-Lead?l=en"])
+    assert.equal(parseAtsUrl(u)?.slug, "kiska");
+  assert.equal(parseAtsUrl("https://kiska.softgarden.io/job/68673563/Senior-UX-Lead?l=en")?.jobId, "68673563");
+  assert.deepStrictEqual(parseAtsUrl("https://job-boards.eu.greenhouse.io/bitpanda/jobs/5009825101"), { providerId: "greenhouse", slug: "bitpanda", jobId: "5009825101" });
+  assert.deepStrictEqual(parseAtsUrl("https://boards.greenhouse.io/embed/job_app?for=Bitpanda&token=5009825101"), { providerId: "greenhouse", slug: "bitpanda", jobId: "5009825101" });
+  assert.equal(parseAtsUrl("https://jobs.smartrecruiters.com/BoschGroup/744000162069649-x")?.slug, "BoschGroup");
+  assert.equal(parseAtsUrl("https://jobs.smartrecruiters.com/BoschGroup/744000162069649-x")?.jobId, "744000162069649");
+  assert.equal(parseAtsUrl("https://fronius.jobs.personio.com/")?.providerId, "personio");
+  assert.deepStrictEqual(parseAtsUrl("https://acme.recruitee.com/o/product-designer"), { providerId: "recruitee", slug: "acme", jobId: "product-designer" });
+  assert.deepStrictEqual(parseAtsUrl("https://apply.workable.com/acme/j/ABC123/"), { providerId: "workable", slug: "acme", jobId: "ABC123" });
+  assert.equal(parseAtsUrl("https://careers.globallogic.com/x"), null);
+  assert.deepStrictEqual(describeCompanyEntry("bitpanda"), { kind: "slug", slug: "bitpanda" });
+  assert.equal(describeCompanyEntry("https://careers.globallogic.com").kind, "unsupported");
+  console.log("ok  URL recognition");
+
+  // Registry: dedupe + limit + skip, with fixture fetch
+  const n8nRoutes = {
+    "https://boards-api.greenhouse.io/v1/boards/n8n": "404",
+    "https://api.lever.co/v0/postings/n8n": "404",
+    "https://api.ashbyhq.com/posting-api/job-board/n8n": "ashby/n8n.json",
+  };
+  const n8nId = "ashby_n8n_fe05c209-8069-4a88-aeba-8da23488cd30";
+  const jobs = await withFixtures(n8nRoutes, () =>
+    scrapeTargetCompanies(["n8n", "https://jobs.ashbyhq.com/n8n"], ["Product Designer"], { limit: 1, skipJobIds: new Set() })
+  );
+  assert.equal(jobs.length, 1);
+  const unfiltered = await withFixtures(n8nRoutes, () =>
+    scrapeTargetCompanies(["https://jobs.ashbyhq.com/n8n", "JOBS.ashbyhq.com/N8N"], ["Product Designer"])
+  );
+  assert.equal(new Set(unfiltered.map((j) => j.job_id)).size, unfiltered.length); // second entry deduped
+  const skippedJobs = await withFixtures(n8nRoutes, () =>
+    scrapeTargetCompanies(["https://jobs.ashbyhq.com/n8n"], ["Product Designer"], { skipJobIds: new Set([n8nId]) })
+  );
+  assert.ok(unfiltered.some((j) => j.job_id === n8nId));
+  assert.ok(!skippedJobs.some((j) => j.job_id === n8nId));
+  const unsup = await withFixtures({}, () => scrapeTargetCompanies(["https://careers.globallogic.com", "https://acme.recruitee.com"], []));
+  assert.equal(unsup.length, 0);
+  console.log("ok  registry scrape");
 }
 
 main().catch((e) => {
