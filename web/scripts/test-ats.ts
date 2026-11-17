@@ -91,6 +91,15 @@ async function main() {
   assert.ok(!skippedJobs.some((j) => j.job_id === n8nId));
   const unsup = await withFixtures({}, () => scrapeTargetCompanies(["https://careers.globallogic.com", "https://acme.recruitee.com"], []));
   assert.equal(unsup.length, 0);
+  const urlOnly = await withFixtures(n8nRoutes, () =>
+    scrapeTargetCompanies(["https://jobs.ashbyhq.com/n8n"], ["Product Designer"])
+  );
+  for (const entries of [["n8n", "https://jobs.ashbyhq.com/n8n"], ["https://jobs.ashbyhq.com/n8n", "n8n"]]) {
+    const got = await withFixtures(n8nRoutes, () => scrapeTargetCompanies(entries, ["Product Designer"]));
+    const ids = got.map((j) => j.job_id);
+    assert.equal(new Set(ids).size, ids.length, `duplicate job_ids for ${entries.join(" + ")}`);
+    assert.deepStrictEqual(ids, urlOnly.map((j) => j.job_id), `slug+URL differs from URL alone for ${entries.join(" + ")}`);
+  }
   console.log("ok  registry scrape");
 }
 

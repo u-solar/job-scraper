@@ -29,7 +29,8 @@ export async function scrapeTargetCompanies(
 ): Promise<ScrapedJob[]> {
   const all: ScrapedJob[] = [];
   const max = typeof opts.limit === "number" && opts.limit > 0 ? opts.limit : Infinity;
-  const seen = new Set<string>();
+  const scraped = new Set<string>(); // providerId:slug boards already done in this run
+  const seenJobIds = new Set<string>();
 
   for (const entry of entries) {
     if (all.length >= max) break;
@@ -38,16 +39,24 @@ export async function scrapeTargetCompanies(
       console.log(`[ATS] Skipping unsupported company entry '${entry.trim()}'.`);
       continue;
     }
-    const key = `${resolved.providers.map((p) => p.id).join("|")}:${resolved.slug.toLowerCase()}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    const isUrl = resolved.providers.length === 1;
 
     for (const provider of resolved.providers) {
-      const found = await provider.listJobs(resolved.slug, keywords, {
-        limit: max === Infinity ? undefined : max - all.length,
-        skipJobIds: opts.skipJobIds,
-      });
+      const key = `${provider.id}:${resolved.slug.toLowerCase()}`;
+      if (scraped.has(key)) {
+        if (isUrl) break;
+        continue;
+      }
+      if (isUrl) scraped.add(key);
+      const found = (
+        await provider.listJobs(resolved.slug, keywords, {
+          limit: max === Infinity ? undefined : max - all.length,
+          skipJobIds: opts.skipJobIds,
+        })
+      ).filter((j) => !seenJobIds.has(j.job_id));
       if (found.length > 0) {
+        scraped.add(key);
+        found.forEach((j) => seenJobIds.add(j.job_id));
         all.push(...found);
         break;
       }
