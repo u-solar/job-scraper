@@ -8,10 +8,11 @@ import { lever } from "../src/lib/scraper/ats/lever";
 import { personio } from "../src/lib/scraper/ats/personio";
 import { recruitee } from "../src/lib/scraper/ats/recruitee";
 import { pacing } from "../src/lib/scraper/ats/shared";
+import { softgarden } from "../src/lib/scraper/ats/softgarden";
 import { smartrecruiters } from "../src/lib/scraper/ats/smartrecruiters";
 import { workable } from "../src/lib/scraper/ats/workable";
 import { describeCompanyEntry, parseAtsUrl } from "../src/lib/scraper/ats/urls";
-import { scrapeTargetCompanies } from "../src/lib/scraper/ats/registry";
+import { fetchAtsJobFromUrl, scrapeTargetCompanies } from "../src/lib/scraper/ats/registry";
 import type { AtsProvider } from "../src/lib/scraper/ats/types";
 
 const providers: Record<string, AtsProvider> = { greenhouse, lever, ashby };
@@ -156,6 +157,7 @@ async function main() {
 
   await testPersonioRecruitee();
   await testSmartRecruitersWorkable();
+  await testSoftgarden();
 }
 
 async function testPersonioRecruitee() {
@@ -348,6 +350,65 @@ async function testSmartRecruitersWorkable() {
   assert.deepStrictEqual(await withFixtures({ [wlList]: "workable/empty.json" }, () => workable.listPostings("nope")), []);
   assert.equal(await withFixtures({ [`${WL}/v2/accounts/nope/jobs/X`]: "404" }, () => workable.getJob("nope", "X")), null);
   console.log("ok  smartrecruiters + workable");
+}
+
+async function testSoftgarden() {
+  pacing.wait = async () => {};
+  const B = "https://kiska.softgarden.io";
+  const routes = {
+    [`${B}/en/vacancies`]: "softgarden/vacancies.html",
+    [`${B}/job/68673563`]: "softgarden/job-68673563.html",
+    [`${B}/job/67774182`]: "softgarden/job-67774182.html",
+    [`${B}/job/67247665`]: "softgarden/job-nold.html", // a page without JSON-LD
+  };
+  const detailUrls = (urls: string[]) => urls.filter((u) => u.includes("/job/"));
+  const all = await withFixtures(routes, () => softgarden.listJobs("kiska", []));
+  assert.equal(all.length, 2, "the posting without JSON-LD is left out");
+  const ux = all.find((j) => j.job_id === "softgarden_kiska_68673563")!;
+  assert.ok(ux, "job_id format");
+  assert.equal(ux.job_title, "Senior UX Lead");
+  assert.equal(ux.company, "KISKA GmbH");
+  assert.equal(ux.location, "Anif, Salzburg, Austria");
+  assert.equal(ux.provider, "softgarden");
+  assert.equal(ux.application_url, `${B}/job/68673563/Senior-UX-Lead?l=en`);
+  assert.ok(ux.description && ux.description.includes("Senior UX Lead"));
+  assert.equal(ux.posted_at, "2026-11-11T08:53:58.680Z");
+
+  // keyword matches on the listing title: only the matching detail call is made
+  assert.deepStrictEqual(detailUrls(await recordUrls(routes, () => softgarden.listJobs("kiska", ["UX Lead"]))), [`${B}/job/68673563?l=en`]);
+  // limit / skip stop detail calls early
+  assert.equal(detailUrls(await recordUrls(routes, () => softgarden.listJobs("kiska", [], { limit: 1 }))).length, 1);
+  const skipped = await recordUrls(routes, () => softgarden.listJobs("kiska", [], { limit: 1, skipJobIds: new Set(["softgarden_kiska_68673563"]) }));
+  assert.ok(!detailUrls(skipped).some((u) => u.includes("68673563")));
+  // pacing: first detail call is not delayed, N calls wait N-1 times
+  let waits = 0;
+  pacing.wait = async () => { waits++; };
+  await withFixtures(routes, () => softgarden.listJobs("kiska", []));
+  assert.equal(waits, 2, "3 detail calls, 2 waits");
+  pacing.wait = async () => {};
+
+  const sp = await withFixtures(routes, () => softgarden.listPostings("kiska"));
+  assert.deepStrictEqual(sp!.map((p) => [p.id, p.title]), [["68673563", "Senior UX Lead"], ["67774182", "Junior Alias Modeller"], ["67247665", "U.S. Growth Lead"]]);
+  assert.equal(sp![0].url, `${B}/job/68673563/Senior-UX-Lead?l=en`);
+  assert.equal(sp![0].companyName, "Kiska");
+  const sg = await withFixtures(routes, () => softgarden.getJob("kiska", "68673563"));
+  assert.equal(sg?.job_id, "softgarden_kiska_68673563");
+  assert.equal(sg?.provider, "softgarden");
+  assert.equal(await withFixtures(routes, () => softgarden.getJob("kiska", "67247665")), null);
+
+  // 404 / not a listing / empty board
+  const list = `${B}/en/vacancies`;
+  assert.equal(await withFixtures({ [list]: "404" }, () => softgarden.listPostings("kiska")), null);
+  assert.deepStrictEqual(await withFixtures({ [list]: "404" }, () => softgarden.listJobs("kiska", [])), []);
+  assert.equal(await withFixtures({ [list]: "softgarden/html.html" }, () => softgarden.listPostings("kiska")), null);
+  assert.deepStrictEqual(await withFixtures({ [list]: "softgarden/html.html" }, () => softgarden.listJobs("kiska", [])), []);
+  assert.deepStrictEqual(await withFixtures({ [list]: "softgarden/empty.html" }, () => softgarden.listPostings("kiska")), []);
+  assert.equal(await withFixtures({ [`${B}/job/1`]: "404" }, () => softgarden.getJob("kiska", "1")), null);
+  assert.deepStrictEqual(
+    await withFixtures({ [`${B}/job/68673563`]: "softgarden/job-68673563.html" }, () => fetchAtsJobFromUrl(`${B}/en/job/68673563/Senior-UX-Lead`)).then((j) => j?.job_id),
+    "softgarden_kiska_68673563"
+  );
+  console.log("ok  softgarden");
 }
 
 main().catch((e) => {

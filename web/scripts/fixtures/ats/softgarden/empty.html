@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.sourceforge.net/" lang="en" class="no-js no-ie">
+    <head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="author" content="softgarden e-recruiting GmbH"/>
+     	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+		<link rel="icon" href="https://static.softgarden.de/favicon/favicon-32x32.png"><!--[if IE]><link rel="shortcut icon" href="https://static.softgarden.de/favicon/favicon.ico"><![endif]--><style type="text/css" id="jobSearchCss">
+#jobsContainer .matchContainer .title { width: 100% } </style>
+<script type="text/javascript" src="../wicket/resource/com.softgarden.staffit.webclient.webfrontend.core.WebFrontendApplication/core-ver-46480A77CA2574AB851CD35B365719CA.js"></script>
+<script type="text/javascript" id="jobsearchjs">
+/*<![CDATA[*/
+
+var criterions = [
+    {
+        "id": "audience",
+        "name": "Career Level",
+        "options": {
+            "3a3af3667f000002010ad49215c3a5f4": "Young Professional",
+            "3a3b1f6e7f000002010ad492e7837dd6": "Experienced Professional",
+            "6179d1a00a0b0cce01ed3de8643a0e39": "Student",
+            "43f42ce6-68fc-4c19-8ead-7f3bf12aead5": "Young or Experienced Professional"
+        }
+    },
+    {
+        "id": "jobcategory",
+        "name": "Job Categories",
+        "options": {
+            "32d76ae8-0209-4a4f-ba49-bae846864209": "Apparel and Footwear Design",
+            "e8eb450d-2872-423d-953d-4d79957674b9": "Brand and Research",
+            "92bc8ff8-9be4-4757-8b3d-b5e0066355a7": "Brand Communication",
+            "c8d6c7f7-0261-44ce-a161-50d961948c71": "Client/ Account Management",
+            "sam42_engineering": "Engineering",
+            "sam42_hr": "HR and Finance",
+            "b4b60b04-9572-45fe-85bf-4c93bded605e": "Interaction Design",
+            "sam42_it": "IT",
+            "sam42_marketing": "Marketing",
+            "7ad26073-a0d3-49ef-8689-043b31caef58": "Modelling",
+            "8243d928-0cce-4b9f-8ed2-086ea7b2b3c6": "Operations",
+            "19dbda5a-fba1-45c2-9c2d-ca103448b7b7": "Product Experience Design",
+            "4f47f273-4269-44e5-a2c6-f03bb7a2ce02": "Project Management",
+            "bc2db969-d9a7-47c1-ac27-d4d26950a722": "Strategic Product Management",
+            "sam42_design": "Transportation Design",
+            "d9e80fda-fbd4-481f-b8ca-2c677a0a2e23": "Design"
+        }
+    }
+];
+var sg_jobsearch_hide_inactive = true;
+var jobs_selected = Array();
+var current_page = 1;
+var order_by = 0;
+var jobs_per_page = 10;
+var paging_window = -1;
+var JobResultAnimationOff = false;
+var showInfoBoxSeeEndOfPage = true;
+var jobs_selected_per_list = Array();
+var preselected_location = '';
+var preselected_location_radius = '';
+var preselected_values = {};
+var geocodingOverride = {"OSM":{"62782":{"boundingBox":"[\"53.3951118\", \"53.7393983\", \"9.7275419\", \"10.3252805\"]"}},"GOOGLE":{}};
+jQuery(document).ready(function() {
+    jQuery('#selector_0').change(function () {
+    	jQuery('#jobsContainer').show();
+    	updateLists(0, order_by);
+	 	jQuery('.resetForm').show();
+	});
+    jQuery('#selector_1').change(function () {
+    	jQuery('#jobsContainer').show();
+    	updateLists(1, order_by);
+	 	jQuery('.resetForm').show();
+	});
+jQuery('.matchHeadline').show();
+initialize(order_by);
+});jobs_selected_per_list[0] = Array();
+jobs_selected_per_list[1] = Array();
+var job_id_list_ordered = new Array ();
+job_id_list_ordered[0] = [67247665, 67774182, 68673563];
+job_id_list_ordered[1] = [67774182, 68673563, 67247665];
+
+var complete_job_id_list = jobs_selected = [67247665, 67774182, 68673563];
+var jobs_keyword_search = complete_job_id_list;
+var jobs_geoLocation_search = complete_job_id_list;
+var search_criteria = new Array();
+search_criteria[0] = new Object();
+search_criteria[0]["3a3b1f6e7f000002010ad492e7837dd6"] = [67247665, 68673563];
+search_criteria[0]["3a3af3667f000002010ad49215c3a5f4"] = [67774182];
+
+search_criteria[1] = new Object();
+search_criteria[1]["b4b60b04-9572-45fe-85bf-4c93bded605e"] = [68673563];
+search_criteria[1]["7ad26073-a0d3-49ef-8689-043b31caef58"] = [67774182];
+search_criteria[1]["c8d6c7f7-0261-44ce-a161-50d961948c71"] = [67247665];
+
+
+/*]]>*/
+</script>
+<title>Career board | KISKA GmbH</title><meta name="description" content="career board | © softgarden" />
+<meta name="robots" content="index, follow" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Career board | KISKA GmbH" />
+<meta name="twitter:site" content="@softgarden" />
+<meta name="twitter:description" content="career board | © softgarden" />
+<meta name="twitter:image" content="https://app.softgarden.io/assets/public/media/get/fa2c2652-0b51-4833-adb0-1c8357a7ed63/1661330320486/1100x0/KISKA_Entrance_softgarden_header_2100x500.jpg" />
+<meta property="og:title" content="Career board | KISKA GmbH" />
+<meta property="og:description" content="career board | © softgarden" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://app.softgarden.io/assets/public/media/get/fa2c2652-0b51-4833-adb0-1c8357a7ed63/1661330320486/1100x576P/KISKA_Entrance_softgarden_header_2100x500.jpg" />
+<meta property="og:image:width" content="1100" />
+<meta property="og:image:height" content="576" />
+<script type="text/javascript" src="../wicket/resource/com.softgarden.staffit.webclient.webfrontend.pages.main.js.JavaScriptReference/modernizr-ver-BBD564F40D2D602049100DC76FE17C37.js"></script>
+<script type="text/javascript" id="sg_config">
+/*<![CDATA[*/
+var SG = SG || {};
+/*]]>*/
+</script>
+<link rel="stylesheet" type="text/css" href="//static.softgarden.de/thirdparty/fonts/css/dosis.css" />
+<link rel="stylesheet" type="text/css" href="//static.softgarden.de/thirdparty/fonts/css/dosis-vietnamese_latin-ext_latin.css" />
+<link rel="stylesheet" type="text/css" href="../wicket/resource/com.softgarden.staffit.webclient.webfrontend.pages.main.css.CssReference/webfrontend-v2-ver-591897EFF2EA75250FF42C429E89BE70.css" />
+<style type="text/css" id="companyCss">
+body { background:  #E8E8E8 no-repeat 0% 0%; } 
+.content-wrapper, .narrow-page, header.image-header { background-color: #FFFFFF; } 
+.content-box { background: #EEF1F2; } 
+a, label i, label em { color: #575959; } 
+a:visited { color: #878D8F; } 
+a:hover, .btn-link:hover, .btn-link:focus, .btn-link:active { color: #8F8F8F; } 
+body, h1, h2, h3 { color: #111111; } 
+.secondary-color, label, .control-group.error .control-label { color: #9FABB3; } 
+textarea:focus, select:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus, .chosen-container-active .chosen-single, .chosen-container-active .chosen-choices, .chosen-container .chosen-drop { border-color: #0C0D0D; } 
+.btn, .btn:visited, .btn-primary, .btn-primary:visited, .upload-item { background-color: #0C0D0D; color: #FFFFFF; background-image: none; } 
+.btn-link, .btn-link:visited { color: #575959; } 
+.upload-item a, .upload-item a:visited { color: #FFFFFF; } 
+.thirdparty-btn.thirdparty-btn--cv-upload > * { color: #FFFFFF !important; } 
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active { background-color: #FFFFFF; color: #000000; } 
+.thirdparty-btn.thirdparty-btn--cv-upload:hover > *, .thirdparty-btn.thirdparty-btn--cv-upload:active > *, .thirdparty-btn.thirdparty-btn--cv-upload:focus > * { color: #000000 !important; } 
+.navbar .btn-navbar, .navbar .btn-navbar.active, .navbar .btn-navbar:active, .navbar .btn-navbar:focus, .navbar .btn-navbar:hover { background-color: #FFFFFF; background-image: none; } 
+.navbar .btn-navbar .icon-bar, .navbar .btn-navbar.active .icon-bar, .navbar .btn-navbar:active .icon-bar, .navbar .btn-navbar:focus .icon-bar, .navbar .btn-navbar:hover .icon-bar { background-color: #505159; } 
+.sg-rating__star-icn.is-active, .sg-rating__star.is-hover .sg-rating__star-icn { color: #0C0D0D; } 
+.navbar .navbar-inner, .navbar .dropdown-menu { background-color: #FFFFFF; } 
+.navbar .nav > li > .dropdown-menu:after { border-bottom-color: #FFFFFF; } 
+.navbar .nav > li > a, .nav-collapse .dropdown-menu a, .navbar a, .navbar a:visited { color: #505159; } 
+.navbar .nav li.dropdown > .dropdown-toggle .caret { border-color: #505159; } 
+.navbar .nav > li > a.active, .navbar .nav > li > a:focus, .navbar .nav > li > a:hover, .navbar .nav li.dropdown.open > .dropdown-toggle, .nav-collapse .dropdown-menu a:focus, .nav-collapse .dropdown-menu a:hover, .nav-collapse .nav > li > a:focus, .nav-collapse .nav > li > a:hover { background-color: #46494A; color: #FFFFFF; } 
+.navbar .nav li.dropdown > a:focus .caret, .navbar .nav li.dropdown > a:hover .caret, .navbar .nav li.dropdown.open > .dropdown-toggle .caret { border-color: #FFFFFF; } 
+@font-face {
+
+font-family: 'Source Sans Pro';
+src: url(https://mediaassets.softgarden.de/customer/Fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf') format('truetype');
+font-weight:400;
+}
+
+@font-face {
+
+font-family: 'Source Sans Pro';
+src: url(https://mediaassets.softgarden.de/customer/Fonts/Source_Sans_Pro/SourceSansPro-Light.ttf') format('truetype');
+font-weight:300;
+}
+
+@font-face {
+
+font-family: 'Source Sans Pro';
+src: url(https://mediaassets.softgarden.de/customer/Fonts/Source_Sans_Pro/SourceSansPro-Bold.ttf') format('truetype');
+font-weight:600;
+}
+
+@font-face {
+
+font-family: 'Source Sans Pro';
+src: url(https://mediaassets.softgarden.de/customer/Fonts/Source_Sans_Pro/SourceSansPro-Bold.ttf') format('truetype');
+font-weight:800;
+}
+/**app-form__cv-upload**/
+
+.app-form__cv-upload .row-fluid{
+    width: 50%;
+    float: left;
+}
+.span4{
+   width: 50%;
+    min-width: 180px;
+}
+
+.app-form__cv-upload .row-fluid:nth-child(2) {
+    margin-left: -20px;
+}
+body, label {
+font-family: 'Source Sans Pro', sans-serif;
+font-size: 15px;
+font-weight:300;
+}
+
+
+.body-wrapper{
+    padding: 20px;
+    background: #fff;
+}
+:lang(en) .body-wrapper:before {
+    content: "Create experiences people love. Build a career you believe in. If you stand out and want to make an impact, unleash your skills at KISKA. Now hiring experts in Brand, Design, and Communications.";
+padding:60px 30px 30px 30px;
+    display: block;
+font-size: 40px;
+font-weight:800;
+    line-height: normal;
+    margin-bottom: 25px;
+}
+:lang(de) .body-wrapper:before {
+    content: "Schaffe Erlebnisse, die Menschen lieben. Baue eine Karriere auf, an die du glaubst. Wenn du auffallen willst und etwas bewirken möchtest, dann setze deine Fähigkeiten bei KISKA ein. Wir stellen jetzt Experten für Marke, Design und Kommunikation ein.";
+padding: 60px 30px 30px 30px;
+    display: block;
+font-size: 40px;
+font-weight:800;
+    line-height: normal;
+    margin-bottom: 25px;}
+.navbar .nav.nav-public .link-jobs, .application-form .content-wrapper .page-title{
+    display: none;
+}
+/**.image-header:after{ content:"Kiska";
+font-family: 'Source Sans Pro', sans-serif;
+font-size: 30px;
+font-weight:600;
+padding: 30px 50px 0;
+display: block;}
+**/
+.ema__form-profile:before{
+content:"Candidate Application Form";
+padding: 0 30px;
+    font-weight: 600;
+    font-size: 20px;
+
+}
+.ema__form-profile h2.section-wrapper{
+display:none;
+}
+.section-wrapper {
+    max-width: initial;}
+/*.ema__form-questions:before{
+content:"Application Questions";
+padding: 0 30px;
+    font-weight: 600;
+    font-size: 20px;
+
+}*/
+.ema__form-questions h2.section-wrapper{
+display:none;
+}
+
+ :lang(de)  .row-fluid#application-profile-additional-attachments:before {
+    content: "Anschreiben,  Portfolio oder weitere Anhänge";
+    color: #9FABB3;
+    margin: 15px 0px;
+    padding-top: 12px;
+}
+
+ :lang(en)  .row-fluid#application-profile-additional-attachments:before {
+    content: "Cover Letter, Portfolio or other attachments";
+    color: #9FABB3;
+    margin: 15px 0px;
+    padding-top: 12px;
+}
+#application-profile-additional-attachments label{
+display:none;}
+
+[data-slnm="applicationform-input_buttonSubmit"] {
+float:right;
+}
+
+.ema__form-pp  .pull-right {
+    float: left;
+}
+.ema__form-questions  .section-wrapper {
+    padding: 0 30px;}
+.ema__form-questions {
+
+    padding: 0;
+}
+
+@media only screen and (min-width: 767px) {
+
+.app-form__cv{max-width:81%;}
+}
+
+
+@media only screen and (max-width: 767px) {
+.app-form__cv-upload .row-fluid , .two-rows-panel .thirdparty--linkedin{
+    width: 100%; 
+}
+
+.app-form__cv-upload .row-fluid:nth-child(2) {
+    margin-left: 0;
+    margin-top: 5px;
+}
+
+.thirdparty--linkedin iframe {
+width: 100%!important;
+min-width:220px!important;
+    height: 105px!important;}
+
+.thirdparty--linkedin button
+{
+    min-width: 225px!important;
+}
+
+.row-fluid [class*=span] {
+
+    max-width: 215px;
+}
+}
+
+.network-account-creation-border, .network-info, .jobs-page, .navbar .nav.pull-right{display:none;
+}
+
+.fake-cv-button__ct {
+    position: relative;
+    max-width: 248px;
+}
+</style>
+<meta name="wicket.header.items"/>
+    </head>
+    <body>
+		<a href="#content" class="visually-hidden">Skip to main content</a>
+		
+		<div id="navbar" class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse" aria-label="main menu">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					
+					<a class="brand" href="./vacancies">
+						
+						<img src="https://app.softgarden.io/assets/public/media/get/fa2015ed-9fa9-4f77-8b85-641edc25dd8f/1661330320314/0x45/Logo.png" alt="KISKA GmbH"/>
+					</a>
+					
+					<div class="nav-public-collapse nav-collapse collapse">
+						<ul class="nav-public nav">
+					    	<li><a href="./vacancies" class="link-jobs external navlink active">Jobs</a></li><li></li><li></li><li></li><li></li>
+						</ul>
+					</div>
+					
+					<div class="nav-personal-collapse nav-collapse collapse">
+						<ul class="nav-personal nav pull-right">
+							<li><a href="../sign-in?l=en" class="link-signin navlink">Sign in</a></li><li><a href="../sign-up?l=en" class="link-register navlink">Sign up</a></li><li></li>
+							
+							
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+
+		<div id="content" class="page-wrapper">
+			<div class="container">
+
+					
+		
+			<header class="image-header">
+				<div class="img-wrap">
+					<img src="https://app.softgarden.io/assets/public/media/get/fa2c2652-0b51-4833-adb0-1c8357a7ed63/1661330320486/1100x0/KISKA_Entrance_softgarden_header_2100x500.jpg" alt="">
+				</div>
+			</header>
+		
+
+		
+		
+
+		
+		
+	
+					<div class="body-wrapper">
+						
+		
+		<div class="jobs-page narrow-page">
+			<div>
+		<div class="job-search-panel">
+		
+			
+		
+			<div class="job-search">
+		<div class="internal-account-hint span3">
+			<a href="./vacancies?-1.-jobSearch-jobSearchContainer-internalLink" class="btn btn-primary">Already an employee?</a>
+		</div>
+
+		<div class="searchBoxComplete">
+			<div class="searchBoxTop">
+				<section class="job-search-config searchBoxTopSmall">
+					<form class="search-form">
+						<section class="keyword-search">
+							<div class="keywordSearch">
+								<label for="keyword_search">Keyword search</label>
+								<div class="loading-spinner" id="performing_keyword_search">
+									<img src="../img/jobsearch/taloom_loader_small.gif" alt="searching"/>
+								</div>
+								<input id="keyword_search" type="text" class="input-xlarge" value="" name="jobSearch:jobSearchContainer:keyword_search"/>
+							</div>
+						</section>
+						<section class="location-search" style="display: none;">
+							<div class="locationSearch search_criterion_box search_criterion_box_location">
+								<div class="resetLink selectAllLinkContainer">
+									<a href="#" onclick="resetLocationSearch();jQuery('.locationSearch .resetLink').hide(); return false;">Reset</a>
+								</div>
+								<label for="geoLocation_search">Location search</label>
+
+								<div class="loading-spinner" id="performing_location_search">
+									<img src="../img/jobsearch/taloom_loader_small.gif" alt="searching"/>
+								</div>
+								<div>
+									<input id="geoLocation_search" type="text" class="input-xlarge" value="" name="jobSearch:jobSearchContainer:geoLocation_search_wrapper:geoLocation_search"/>
+									<div id="geoLocation_info">
+
+										<small>
+											Work in
+											<a href="#" onclick="centerMapToSearch();" id="geoLocation_result"> </a>
+											<span class="search-result-no-map"></span>
+											within
+										</small>
+										<div id="geoLocation_radius">
+											<select name="jobSearch:jobSearchContainer:geoLocation_search_wrapper:geoLocationRadius" id="id1">
+<option value="1">1 km</option>
+<option value="5">5 km</option>
+<option value="10">10 km</option>
+<option selected="selected" value="25">25 km</option>
+<option value="50">50 km</option>
+<option value="75">75 km</option>
+<option value="100">100 km</option>
+</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>
+
+						
+	
+	<section class="extended-search">
+		<div class="search-criteria-container">
+			
+				<div class="search_criterion_box" style="display: none">
+	<div class="searchFieldLabel">
+		<div class="selectAllLinkContainer"><a href="javascript:;" id="id2" data-select="#selector_0" class="js-toggle-all-select-options">Reset</a></div>
+		<label for="searchFieldId" class="searchCriterionBoxHeader">Audience</label>
+	</div>
+	<select id="selector_0" multiple="multiple" size="5" class="SearchMultiSelectBox filter-options-select search_criterion_box_audience" aria-label="Zielgruppe oder Jobkategorie auswählen" name="audience[]" data-reset-link="#id2">
+<option  title = "Young Professional" value="3a3af3667f000002010ad49215c3a5f4">Young Professional</option>
+<option  title = "Experienced Professional" value="3a3b1f6e7f000002010ad492e7837dd6">Experienced Professional</option>
+<option  title = "Student" value="6179d1a00a0b0cce01ed3de8643a0e39">Student</option>
+<option  title = "Young or Experienced Professional" value="43f42ce6-68fc-4c19-8ead-7f3bf12aead5">Young or Experienced Professional</option>
+</select>
+</div>
+			
+				<div class="search_criterion_box" style="display: none">
+	<div class="searchFieldLabel">
+		<div class="selectAllLinkContainer"><a href="javascript:;" id="id3" data-select="#selector_1" class="js-toggle-all-select-options">Reset</a></div>
+		<label for="searchFieldId" class="searchCriterionBoxHeader">Job category</label>
+	</div>
+	<select id="selector_1" multiple="multiple" size="5" class="SearchMultiSelectBox filter-options-select search_criterion_box_jobcategory" aria-label="Zielgruppe oder Jobkategorie auswählen" name="jobcategory[]" data-reset-link="#id3">
+<option  title = "Apparel and Footwear Design" value="32d76ae8-0209-4a4f-ba49-bae846864209">Apparel and Footwear Design</option>
+<option  title = "Brand and Research" value="e8eb450d-2872-423d-953d-4d79957674b9">Brand and Research</option>
+<option  title = "Brand Communication" value="92bc8ff8-9be4-4757-8b3d-b5e0066355a7">Brand Communication</option>
+<option  title = "Client/ Account Management" value="c8d6c7f7-0261-44ce-a161-50d961948c71">Client/ Account Management</option>
+<option  title = "Engineering" value="sam42_engineering">Engineering</option>
+<option  title = "HR and Finance" value="sam42_hr">HR and Finance</option>
+<option  title = "Interaction Design" value="b4b60b04-9572-45fe-85bf-4c93bded605e">Interaction Design</option>
+<option  title = "IT" value="sam42_it">IT</option>
+<option  title = "Marketing" value="sam42_marketing">Marketing</option>
+<option  title = "Modelling" value="7ad26073-a0d3-49ef-8689-043b31caef58">Modelling</option>
+<option  title = "Operations" value="8243d928-0cce-4b9f-8ed2-086ea7b2b3c6">Operations</option>
+<option  title = "Product Experience Design" value="19dbda5a-fba1-45c2-9c2d-ca103448b7b7">Product Experience Design</option>
+<option  title = "Project Management" value="4f47f273-4269-44e5-a2c6-f03bb7a2ce02">Project Management</option>
+<option  title = "Strategic Product Management" value="bc2db969-d9a7-47c1-ac27-d4d26950a722">Strategic Product Management</option>
+<option  title = "Transportation Design" value="sam42_design">Transportation Design</option>
+<option  title = "Design" value="d9e80fda-fbd4-481f-b8ca-2c677a0a2e23">Design</option>
+</select>
+</div>
+			
+		</div>
+		<div class="hide" id="mobile_placeholder">Please choose</div>
+	</section>
+	
+
+					</form>
+				</section>
+				<section class="job-abo">
+
+					<a href="./vacancies?-1.-jobSearch-jobSearchContainer-jobAboLink" rel="nofollow" class="btn btn-primary">Subscribe to jobs</a>
+
+				</section>
+
+				
+			</div>
+
+			<div id="jobsContainer" class="job-search-results">
+				<div>
+		<div class="job-search-result-panel">
+			<section id="job-search-map" class="jobMapContainer">
+				<div id="map_canvas"></div>
+			</section>
+
+			<section class="results">
+				<form>
+					<div class="result_count_div" id="job-search-result-count-label">
+						<p id="result_count_one" style="display: none;">Your search returned one positions</p>
+						<p id="result_count_more" style="display: none;">Your search returned  <span id='jobs_result_count'>{0}</span>  positions:</p>
+						<p id="result_count_none" style="display: none;">Your search returned no positions.</p>
+					</div>
+					<div class="matchContainer">
+						<div class="matchElement matchHeadline">
+							<div id="matchValueHeadline1" class="matchValue title" onclick="reorderList(1); return false;">
+								<a href="#" onclick="return false;"><span>Vacancy</span><b class="caret"></b></a>
+							</div>
+						</div>
+						<div class="outputContainer">
+</div>
+<div class="pagination pagination-centered"><ul id="job-search-pagination" class="taloom-pager"></ul></div>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+				
+			</div>
+		</div>
+
+		<div id="sg_modal" hidden="" data-wicket-placeholder=""></div>
+	</div>
+
+		</div>
+	</div>
+		</div>
+	
+	
+					</div>
+
+
+				
+		<footer id="footer">
+			<ul class="inline">
+				<li><a href="./imprint" target="_blank" class="sg_imprint_link">Imprint</a></li>
+				<li><a href="./data-security" target="_blank" class="sg_data_privacy_link">Privacy Policy</a></li>
+				<li class="powered-by-taloom">
+	<span>
+		powered by 
+		<a href="https://softgarden.com/en" target="_blank">softgarden</a>
+		
+	</span>
+</li>
+			</ul>
+		</footer>
+	
+			</div>
+		</div>
+
+		
+
+		<div id="sg_modal" hidden="" data-wicket-placeholder=""></div>
+
+		
+		<script type="text/javascript" id="wicket-ajax-base-url">
+/*<![CDATA[*/
+Wicket.Ajax.baseUrl="en/vacancies";
+/*]]>*/
+</script>
+<script type="text/javascript" src="//static.softgarden.de/thirdparty/chosen/1.8.7/chosen.jquery.min.js"></script>
+<script type="text/javascript" id="id2">
+/*<![CDATA[*/
+$('#id2').hide();
+/*]]>*/
+</script>
+<script type="text/javascript" id="id3">
+/*<![CDATA[*/
+$('#id3').hide();
+/*]]>*/
+</script>
+<script type="text/javascript" id="allJobLocations">
+/*<![CDATA[*/
+SG.allJobLocations = [];SG.allJobLocations.push({markerName: 'Senior\x20UX\x20Lead', latitude: 47.7514297, longitude: 13.0649391, postingId: 68673563, geoName: '5081\x20Anif,\x20Austria'});SG.allJobLocations.push({markerName: 'Junior\x20Alias\x20Modelle\x72', latitude: 47.7514297, longitude: 13.0649391, postingId: 67774182, geoName: '5081\x20Anif,\x20Austria'});SG.allJobLocations.push({markerName: 'U.S.\x20Growth\x20Lead', latitude: 36.778261, longitude: -119.4179324, postingId: 67247665, geoName: 'California,\x20USA'});
+/*]]>*/
+</script>
+<script type="text/javascript" id="jobMapInit">
+/*<![CDATA[*/
+window.jQuery('#job-search-map').hide();
+/*]]>*/
+</script>
+<script type="text/javascript" src="https://static.softgarden.de/thirdparty/leaflet/1.9.4/leaflet.js"></script>
+<script type="text/javascript" src="/thirdparty/jquery/query/jquery.query-2.2.3.js"></script>
+<script type="text/javascript" src="../wicket/resource/com.softgarden.staffit.webclient.webfrontend.pages.main.js.JavaScriptReference/jobSearchLive-ver-DF58093895DAE1EA109A34586D3118B6.js"></script>
+<script type="text/javascript" id="frontend-font">
+/*<![CDATA[*/
+WebFont.load({custom:{families:['Open Sans']}});
+/*]]>*/
+</script>
+<script type="text/javascript">
+/*<![CDATA[*/
+Wicket.Event.add(window, "domready", function(event) { 
+Wicket.Ajax.ajax({"u":"./vacancies?-1.0-jobSearch-jobSearchContainer-keyword_search","m":"POST","c":"keyword_search","e":"input change","ch":"keyword_search|d","tr":{"id":"keyword_search","d":10,"p":true}});;
+$('#id1').chosen({width: "100%",disable_search: true,no_results_text: "No entry found",placeholder_text_single: "Please choose",placeholder_text_multiple: "Please choose"});requestAnimationFrame(function() {  var $input = $('#id1_chosen .chosen-search input');  if ($input.length && !$input.attr('aria-label')) {    $input.attr('aria-label', 'Search options');  }});;
+Wicket.Event.publish(Wicket.Event.Topic.AJAX_HANDLERS_BOUND);
+;});
+/*]]>*/
+</script>
+
+    </body>
+</html>

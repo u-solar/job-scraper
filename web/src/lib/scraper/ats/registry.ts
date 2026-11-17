@@ -5,14 +5,14 @@ import { lever } from "./lever";
 import { personio } from "./personio";
 import { recruitee } from "./recruitee";
 import { smartrecruiters } from "./smartrecruiters";
+import { softgarden } from "./softgarden";
 import { workable } from "./workable";
 import type { AtsProvider, AtsProviderId, ListJobsOptions, SingleAtsJobDetails } from "./types";
 import { describeCompanyEntry, parseAtsUrl } from "./urls";
 
 export { ATS_PROVIDER_IDS, ATS_PROVIDER_META, describeCompanyEntry, parseAtsUrl } from "./urls";
 
-// Partial until every platform module exists; resolveCompanyEntry treats a missing one as unsupported.
-export const ATS_PROVIDERS: Partial<Record<AtsProviderId, AtsProvider>> = { greenhouse, lever, ashby, personio, recruitee, smartrecruiters, workable };
+export const ATS_PROVIDERS: Record<AtsProviderId, AtsProvider> = { greenhouse, lever, ashby, personio, recruitee, smartrecruiters, softgarden, workable };
 
 const BARE_SLUG_ORDER = [greenhouse, lever, ashby];
 
@@ -20,8 +20,7 @@ export function resolveCompanyEntry(entry: string): { providers: AtsProvider[]; 
   const d = describeCompanyEntry(entry);
   if (d.kind === "slug") return { providers: BARE_SLUG_ORDER, slug: d.slug };
   if (d.kind === "url") {
-    const p = ATS_PROVIDERS[d.providerId];
-    return p ? { providers: [p], slug: d.slug } : null;
+    return { providers: [ATS_PROVIDERS[d.providerId]], slug: d.slug };
   }
   return null;
 }
@@ -75,7 +74,6 @@ export async function scrapeTargetCompanies(
 
 export async function fetchAtsJobFromUrl(url: string): Promise<SingleAtsJobDetails | null> {
   const parsed = parseAtsUrl(url);
-  const provider = parsed && ATS_PROVIDERS[parsed.providerId];
-  if (!parsed || !provider || !parsed.jobId) return null;
-  return provider.getJob(parsed.slug, parsed.jobId);
+  if (!parsed?.jobId) return null;
+  return ATS_PROVIDERS[parsed.providerId].getJob(parsed.slug, parsed.jobId);
 }
