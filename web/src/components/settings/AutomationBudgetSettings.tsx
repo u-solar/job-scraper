@@ -15,6 +15,7 @@ import {
   Building,
 } from "lucide-react";
 import { AppSettings } from "@/types";
+import { ATS_PROVIDER_META } from "@/lib/scraper/ats/urls";
 import {
   CURATED_MODELS,
   ModelDefinition,
@@ -533,7 +534,7 @@ export function AutomationBudgetSettings({
                 <span>30 (Safety Max)</span>
               </div>
               <p className="text-[11px] text-slate-500 pt-0.5">
-                Pulls directly from target company boards (Greenhouse, Lever, Ashby).
+                Pulls directly from target company boards ({ATS_PROVIDER_META.map((m) => m.label).join(", ")}).
               </p>
             </div>
           )}

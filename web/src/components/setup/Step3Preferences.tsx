@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { ATS_PROVIDER_META } from "@/lib/scraper/ats/urls";
 import {
   Briefcase,
   UploadCloud,
@@ -544,7 +545,7 @@ export function Step3Preferences({
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-900">Direct ATS Boards</p>
-                <p className="text-[11px] text-slate-500">Greenhouse, Lever, Ashby targets</p>
+                <p className="text-[11px] text-slate-500">{ATS_PROVIDER_META.map((m) => m.label).join(", ")} targets</p>
               </div>
             </div>
 

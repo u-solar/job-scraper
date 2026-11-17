@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { X, Link as LinkIcon, FileText, Sparkles, Loader2, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ATS_PROVIDER_META } from "@/lib/scraper/ats/urls";
+
+const ATS_LABELS = ATS_PROVIDER_META.map((m) => m.label);
 
 interface JobImportModalProps {
   isOpen: boolean;
@@ -137,13 +140,13 @@ export function JobImportModal({ isOpen, onClose, onSuccess }: JobImportModalPro
               <input
                 type="url"
                 required
-                placeholder="https://www.linkedin.com/jobs/view/... or Greenhouse, Lever, etc."
+                placeholder="https://www.linkedin.com/jobs/view/... or an ATS job link"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
               />
               <p className="text-xs text-gray-500 leading-relaxed">
-                Supports LinkedIn, MyCareersFuture, Greenhouse, Lever, Ashby, or direct company career pages. We automatically extract and convert the JD into clean markdown and score it with AI.
+                Supports LinkedIn, MyCareersFuture, {ATS_LABELS.join(", ")}, or direct company career pages. We automatically extract and convert the JD into clean markdown and score it with AI.
               </p>
             </div>
           ) : (
