@@ -44,11 +44,13 @@ async function fetchJson(url: string, label: string, timeout: number): Promise<a
 /** All postings of a company, or null if the first page fails. A later failed page keeps what was read. */
 async function fetchAllPostings(company: string): Promise<SrPosting[] | null> {
   const all: SrPosting[] = [];
+  let offset = 0;
   for (let page = 0; page < MAX_PAGES; page++) {
-    const data = await fetchJson(`${API}/${encodeURIComponent(company)}/postings?limit=${PAGE_SIZE}&offset=${all.length}`, company, LIST_TIMEOUT_MS);
+    const data = await fetchJson(`${API}/${encodeURIComponent(company)}/postings?limit=${PAGE_SIZE}&offset=${offset}`, company, LIST_TIMEOUT_MS);
     if (!data || !Array.isArray(data.content)) return page === 0 ? null : all;
     all.push(...data.content.filter((p: SrPosting) => p?.id));
-    if (data.content.length === 0 || all.length >= (Number(data.totalFound) || 0)) break;
+    offset += data.content.length;
+    if (data.content.length === 0 || offset >= (Number(data.totalFound) || 0)) break;
   }
   return all;
 }

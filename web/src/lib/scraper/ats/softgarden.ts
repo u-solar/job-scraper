@@ -33,6 +33,8 @@ async function fetchListing(slug: string): Promise<AtsPosting[] | null> {
     console.warn(`[softgarden] '${slug}' did not return a vacancies listing.`);
     return null;
   }
+  // shortcut: only page 1 is read; follow the pager if boards beyond one page show up
+  if ($("#job-search-pagination a[href]").length) console.warn(`[softgarden] '${slug}' has more than one page of vacancies; only the first page was read.`);
   const seen = new Set<string>();
   const postings: AtsPosting[] = [];
   $("a[href]").each((_, a) => {

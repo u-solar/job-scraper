@@ -341,6 +341,14 @@ async function testSmartRecruitersWorkable() {
   const wp = await withFixtures(wlRoutes, () => workable.listPostings("huggingface"));
   assert.equal(wp!.length, 6);
   assert.equal(wp![0].companyName, "Huggingface");
+  // a nextPage that repeats the token just used ends pagination after that page
+  let wCalls = 0;
+  await withFixtures({ [`${WL}/v3/accounts/loop/jobs`]: ["workable/huggingface-p1.json", "workable/repeat-token.json"] }, async () => {
+    const inner = globalThis.fetch;
+    globalThis.fetch = ((input: any, init?: any) => { wCalls++; return inner(input, init); }) as typeof fetch;
+    try { await workable.listPostings("loop"); } finally { globalThis.fetch = inner; }
+  });
+  assert.equal(wCalls, 2, "p1, then the repeat page once; its repeated token stops the loop");
   const wg = await withFixtures(wlRoutes, () => workable.getJob("huggingface", "DB4D7C0EC8"));
   assert.equal(wg?.job_id, wj[0].job_id);
   assert.equal(wg?.provider, "workable");
@@ -389,6 +397,19 @@ async function testSoftgarden() {
   await withFixtures(routes, () => softgarden.listJobs("kiska", []));
   assert.equal(waits, 2, "3 detail calls, 2 waits");
   pacing.wait = async () => {};
+
+  // pager: empty on KISKA (no warning); a page-2 link warns once and page 1 is still returned
+  const warns: string[] = [];
+  const origWarn = console.warn;
+  console.warn = (...a: unknown[]) => { warns.push(a.join(" ")); };
+  try {
+    await withFixtures(routes, () => softgarden.listPostings("kiska"));
+    assert.equal(warns.length, 0);
+    const paged = await withFixtures({ [`${B}/en/vacancies`]: "softgarden/vacancies-paged.html" }, () => softgarden.listPostings("kiska"));
+    assert.equal(paged!.length, 3);
+    assert.equal(warns.length, 1);
+    assert.match(warns[0], /'kiska'.*first page/);
+  } finally { console.warn = origWarn; }
 
   const sp = await withFixtures(routes, () => softgarden.listPostings("kiska"));
   assert.deepStrictEqual(sp!.map((p) => [p.id, p.title]), [["68673563", "Senior UX Lead"], ["67774182", "Junior Alias Modeller"], ["67247665", "U.S. Growth Lead"]]);

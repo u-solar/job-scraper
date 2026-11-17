@@ -52,7 +52,7 @@ async function fetchAllJobs(slug: string): Promise<WorkableJob[] | null> {
     const data = await request(`${API}/v3/accounts/${slug}/jobs`, slug, LIST_TIMEOUT_MS, { query: "", token });
     if (!data || !Array.isArray(data.results)) return page === 0 ? null : all;
     all.push(...data.results.filter((j: WorkableJob) => j?.shortcode));
-    if (!data.nextPage) break;
+    if (!data.nextPage || data.nextPage === token) break;
     token = data.nextPage;
   }
   return all;
