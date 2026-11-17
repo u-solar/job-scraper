@@ -126,8 +126,8 @@ async function executeCallLLM({
     const payload: any = {
       model: cleanModel,
       messages,
-      max_tokens: 4096,
-      temperature,
+      // Current Claude models reject `temperature` (400) and spend thinking tokens from max_tokens.
+      max_tokens: 16000,
     };
     if (systemPrompt) {
       payload.system = systemPrompt;
@@ -149,7 +149,8 @@ async function executeCallLLM({
     }
 
     const data = await res.json();
-    return data.content?.[0]?.text || "";
+    // Thinking blocks come before the text block on current models.
+    return data.content?.find((b: any) => b.type === "text")?.text || "";
   }
 
   // 2. Detect Fireworks AI
