@@ -149,6 +149,10 @@ async function main() {
 
   // www. and language-prefixed paths
   assert.deepStrictEqual(parseAtsUrl("https://www.kiska.softgarden.io/en/job/68673563/x"), { providerId: "softgarden", slug: "kiska", jobId: "68673563" });
+  // URLs copied from the end of a sentence carry trailing punctuation.
+  for (const u of ["https://kiska.softgarden.io.", "https://kiska.softgarden.io,", "(https://kiska.softgarden.io)", "https://kiska.softgarden.io/."])
+    assert.deepStrictEqual(parseAtsUrl(u), { providerId: "softgarden", slug: "kiska" }, u);
+  assert.equal(describeCompanyEntry("https://kiska.softgarden.io.").kind, "url");
   assert.deepStrictEqual(parseAtsUrl("https://www.jobs.ashbyhq.com/n8n"), { providerId: "ashby", slug: "n8n" });
   assert.deepStrictEqual(parseAtsUrl("https://fronius.jobs.personio.de/en/job/123"), { providerId: "personio", slug: "fronius", jobId: "123" });
   assert.deepStrictEqual(parseAtsUrl("https://fronius.jobs.personio.de/job/123"), { providerId: "personio", slug: "fronius", jobId: "123" });

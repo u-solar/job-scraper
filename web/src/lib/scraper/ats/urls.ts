@@ -33,7 +33,8 @@ const LANG_RE = /^[a-z]{2}(-[a-z]{2})?$/i;
 const UUID_RE = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
 function toUrl(input: string): URL | null {
-  const s = input.trim();
+  // Pasted URLs often carry sentence punctuation or brackets around them.
+  const s = input.trim().replace(/^[(<"']+/, "").replace(/[.,;:)>"']+$/, "");
   if (!s || /\s/.test(s)) return null;
   try {
     return new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
@@ -45,7 +46,7 @@ function toUrl(input: string): URL | null {
 export function parseAtsUrl(input: string): ParsedAtsUrl | null {
   const u = toUrl(input);
   if (!u) return null;
-  const host = u.hostname.toLowerCase().replace(/^www\./, "");
+  const host = u.hostname.toLowerCase().replace(/^www\./, "").replace(/\.$/, "");
   const seg = u.pathname.split("/").filter(Boolean);
   // Language-prefixed paths (/en/job/…, /de-at/o/…) for hosts where the slug is in the hostname.
   const noLang = LANG_RE.test(seg[0] ?? "") ? seg.slice(1) : seg;
