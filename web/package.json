@@ -16,7 +16,8 @@
     "scrape:force": "tsx scripts/scrape-jobs.ts --force",
     "check-schedule": "tsx scripts/check-schedule.ts",
     "migrate": "tsx scripts/migrate.ts",
-    "test:scraper": "tsx scripts/test-scraper.ts"
+    "test:scraper": "tsx scripts/test-scraper.ts",
+    "test:ats": "tsx scripts/test-ats.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
