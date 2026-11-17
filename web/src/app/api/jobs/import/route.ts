@@ -3,11 +3,7 @@ import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { convertHtmlToMarkdown } from "@/lib/scraper/html-to-markdown";
 import { fetchLinkedInJobDetails } from "@/lib/scraper/linkedin";
 import { fetchCareersFutureJobDetails } from "@/lib/scraper/careers-future";
-import {
-  fetchAshbyJobDetails,
-  fetchGreenhouseJobDetails,
-  fetchLeverJobDetails,
-} from "@/lib/scraper/ats-boards";
+import { fetchAtsJobFromUrl } from "@/lib/scraper/ats/registry";
 import { evaluateJobFit, formatResumeToText } from "@/lib/llm";
 import { getCompanyIntelligence } from "@/lib/company-intel";
 import { Resume } from "@/types";
@@ -65,62 +61,17 @@ export async function POST(request: Request) {
         }
       }
 
-      // Case C: Ashby URL (e.g. jobs.ashbyhq.com/supabase/62945518-2468-4cf5-9f36-904b60f75183)
-      if (!finalDescription && cleanUrl.includes("ashbyhq.com")) {
-        const ashbyMatch = cleanUrl.match(/(?:jobs\.)?ashbyhq\.com\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)/i);
-        if (ashbyMatch && ashbyMatch[1] && ashbyMatch[2]) {
-          const companySlug = ashbyMatch[1];
-          const rawJobId = ashbyMatch[2];
-          const ashbyData = await fetchAshbyJobDetails(companySlug, rawJobId);
-          if (ashbyData) {
-            extractedJobId = ashbyData.job_id;
-            finalTitle = finalTitle || ashbyData.title || "";
-            finalCompany = finalCompany || ashbyData.company || "";
-            finalLocation = finalLocation !== "Not specified" ? finalLocation : (ashbyData.location || "Not specified");
-            finalDescription = finalDescription || ashbyData.description || "";
-            finalWorkplaceType = finalWorkplaceType || ashbyData.workplace_type || null;
-            provider = "ashby";
-          }
-        }
-      }
-
-      // Case D: Greenhouse URL (e.g. boards.greenhouse.io/stripe/jobs/8172487 or embed)
-      if (!finalDescription && cleanUrl.includes("greenhouse.io")) {
-        const ghMatch =
-          cleanUrl.match(/(?:boards|job-boards)\.greenhouse\.io\/([a-zA-Z0-9_-]+)\/jobs\/(\d+)/i) ||
-          cleanUrl.match(/boards\.greenhouse\.io\/embed\/job_app\?.*for=([a-zA-Z0-9_-]+).*token=(\d+)/i);
-        if (ghMatch && ghMatch[1] && ghMatch[2]) {
-          const companySlug = ghMatch[1];
-          const rawJobId = ghMatch[2];
-          const ghData = await fetchGreenhouseJobDetails(companySlug, rawJobId);
-          if (ghData) {
-            extractedJobId = ghData.job_id;
-            finalTitle = finalTitle || ghData.title || "";
-            finalCompany = finalCompany || ghData.company || "";
-            finalLocation = finalLocation !== "Not specified" ? finalLocation : (ghData.location || "Not specified");
-            finalDescription = finalDescription || ghData.description || "";
-            finalWorkplaceType = finalWorkplaceType || ghData.workplace_type || null;
-            provider = "greenhouse";
-          }
-        }
-      }
-
-      // Case E: Lever URL (e.g. jobs.lever.co/palantir/6ed76ce8-4156-4b60-b120-403538bd66cd)
-      if (!finalDescription && cleanUrl.includes("lever.co")) {
-        const leverMatch = cleanUrl.match(/(?:jobs\.)?lever\.co\/([a-zA-Z0-9_-]+)\/([a-f0-9-]+)/i);
-        if (leverMatch && leverMatch[1] && leverMatch[2]) {
-          const companySlug = leverMatch[1];
-          const rawJobId = leverMatch[2];
-          const leverData = await fetchLeverJobDetails(companySlug, rawJobId);
-          if (leverData) {
-            extractedJobId = leverData.job_id;
-            finalTitle = finalTitle || leverData.title || "";
-            finalCompany = finalCompany || leverData.company || "";
-            finalLocation = finalLocation !== "Not specified" ? finalLocation : (leverData.location || "Not specified");
-            finalDescription = finalDescription || leverData.description || "";
-            finalWorkplaceType = finalWorkplaceType || leverData.workplace_type || null;
-            provider = "lever";
-          }
+      // Case C: any supported ATS job URL (Greenhouse, Lever, Ashby, Personio, Recruitee, SmartRecruiters, Workable, softgarden)
+      if (!finalDescription) {
+        const d = await fetchAtsJobFromUrl(cleanUrl);
+        if (d) {
+          extractedJobId = d.job_id;
+          finalTitle = finalTitle || d.title || "";
+          finalCompany = finalCompany || d.company || "";
+          finalLocation = finalLocation !== "Not specified" ? finalLocation : (d.location || "Not specified");
+          finalDescription = finalDescription || d.description || "";
+          finalWorkplaceType = finalWorkplaceType || d.workplace_type || null;
+          provider = d.provider;
         }
       }
 

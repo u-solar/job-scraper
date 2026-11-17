@@ -158,6 +158,7 @@ async function main() {
   await testPersonioRecruitee();
   await testSmartRecruitersWorkable();
   await testSoftgarden();
+  await testImportByUrl();
 }
 
 async function testPersonioRecruitee() {
@@ -409,6 +410,61 @@ async function testSoftgarden() {
     "softgarden_kiska_68673563"
   );
   console.log("ok  softgarden");
+}
+
+// Import route: a pasted job URL must yield the same job_id the scraper gives that job (no duplicates).
+async function testImportByUrl() {
+  pacing.wait = async () => {};
+  const gc = (n: string) => goldenCases.find((c) => c.name === n)!.routes;
+  const SR = "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings";
+  const WL = "https://apply.workable.com/api";
+  const SG = "https://kiska.softgarden.io";
+  const PCOM = "https://helpling.jobs.personio.com/xml";
+  const cases: Array<{
+    provider: string; url: string; routes: Record<string, string | string[]>;
+    list: () => Promise<{ job_id: string }[]>; suffix: string;
+  }> = [
+    { provider: "greenhouse", url: "https://boards.greenhouse.io/bitpanda/jobs/5009825101",
+      routes: { ...gc("greenhouse-bitpanda-all"), ...gc("greenhouse-bitpanda-job") },
+      list: () => greenhouse.listJobs("bitpanda", []), suffix: "5009825101" },
+    { provider: "lever", url: "https://jobs.lever.co/spotify/a9d581f9-1361-4227-b230-94a0d6ffdef4",
+      routes: { ...gc("lever-spotify-all"), ...gc("lever-spotify-job") },
+      list: () => lever.listJobs("spotify", []), suffix: "a9d581f9-1361-4227-b230-94a0d6ffdef4" },
+    { provider: "ashby", url: "https://jobs.ashbyhq.com/n8n/fe05c209-8069-4a88-aeba-8da23488cd30",
+      routes: gc("ashby-n8n-all"), list: () => ashby.listJobs("n8n", []), suffix: "fe05c209-8069-4a88-aeba-8da23488cd30" },
+    { provider: "personio", url: "", routes: { "https://helpling.jobs.personio.de/xml": "404", [PCOM]: "personio/helpling.xml" },
+      list: () => personio.listJobs("helpling", []), suffix: "" },
+    { provider: "recruitee", url: "https://bunq.recruitee.com/o/security-engineer-3", routes: { "https://bunq.recruitee.com/api/offers/": "recruitee/bunq.json" },
+      list: () => recruitee.listJobs("bunq", []), suffix: "" },
+    { provider: "smartrecruiters", url: "https://jobs.smartrecruiters.com/BoschGroup/744000162078719-mfq-technikai-asszisztens-gyakornok",
+      routes: { [`${SR}?limit=100&offset=0`]: "smartrecruiters/boschgroup-p1.json", [`${SR}?limit=100&offset=3`]: "smartrecruiters/boschgroup-p2.json",
+        [`${SR}/744000162078719`]: "smartrecruiters/boschgroup-d1.json", [`${SR}/744000162077116`]: "smartrecruiters/boschgroup-d2.json" },
+      list: () => smartrecruiters.listJobs("BoschGroup", [], { limit: 2 }), suffix: "744000162078719" },
+    { provider: "workable", url: "https://apply.workable.com/huggingface/j/DB4D7C0EC8",
+      routes: { [`${WL}/v3/accounts/huggingface/jobs`]: ["workable/huggingface-p1.json", "workable/huggingface-p2.json"],
+        [`${WL}/v2/accounts/huggingface/jobs/DB4D7C0EC8`]: "workable/huggingface-d1.json", [`${WL}/v2/accounts/huggingface/jobs/F88446C814`]: "workable/huggingface-d2.json" },
+      list: () => workable.listJobs("huggingface", ["Python"]), suffix: "DB4D7C0EC8" },
+    { provider: "softgarden", url: `${SG}/en/job/68673563/Senior-UX-Lead`,
+      routes: { [`${SG}/en/vacancies`]: "softgarden/vacancies.html", [`${SG}/job/68673563`]: "softgarden/job-68673563.html",
+        [`${SG}/job/67774182`]: "softgarden/job-67774182.html", [`${SG}/job/67247665`]: "softgarden/job-nold.html" },
+      list: () => softgarden.listJobs("kiska", []), suffix: "68673563" },
+  ];
+  for (const c of cases) {
+    const listed = await withFixtures(c.routes, c.list);
+    let url = c.url;
+    if (c.provider === "personio") url = `https://helpling.jobs.personio.com/job/${listed[0].job_id.split("_").pop()}`;
+    const want = c.provider === "recruitee"
+      ? listed.find((j: any) => j.job_title === "Security Engineer")
+      : c.suffix ? listed.find((j) => j.job_id.endsWith(`_${c.suffix}`)) : listed[0];
+    assert.ok(want, `${c.provider}: job not in listing`);
+    const got = await withFixtures(c.routes, () => fetchAtsJobFromUrl(url));
+    assert.equal(got?.provider, c.provider);
+    assert.equal(got?.job_id, want.job_id, `${c.provider}: import job_id differs from scraper job_id`);
+  }
+  // Board URL without a job id is not importable as a single job.
+  assert.equal(await fetchAtsJobFromUrl("https://boards.greenhouse.io/bitpanda"), null);
+  assert.equal(await fetchAtsJobFromUrl("https://apply.workable.com/huggingface"), null);
+  console.log("ok  import by URL");
 }
 
 main().catch((e) => {
