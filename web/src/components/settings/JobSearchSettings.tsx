@@ -376,6 +376,7 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
                     type="button"
                     onClick={() => handleRemoveCompanySlug(slug)}
                     title="Remove company"
+                    aria-label={`Remove ${slug}`}
                     className="hover:bg-purple-100 rounded p-0.5 text-purple-500 hover:text-purple-800 transition"
                   >
                     <X className="w-3.5 h-3.5" />
