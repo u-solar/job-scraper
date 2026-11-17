@@ -2,6 +2,7 @@
 
 import { Filter, ChevronDown, Check, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { ATS_PROVIDER_META } from "@/lib/scraper/ats/urls";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface FilterOption {
@@ -13,9 +14,7 @@ const PROVIDER_OPTIONS: FilterOption[] = [
   { value: "all", label: "All Providers" },
   { value: "linkedin", label: "LinkedIn" },
   { value: "careers_future", label: "Careers Future" },
-  { value: "greenhouse", label: "Greenhouse" },
-  { value: "lever", label: "Lever" },
-  { value: "ashby", label: "Ashby" },
+  ...ATS_PROVIDER_META.map((m) => ({ value: m.id, label: m.label })),
   { value: "remote_ok", label: "RemoteOK" },
   { value: "imported", label: "Imported / Manual" },
 ];

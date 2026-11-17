@@ -11,6 +11,7 @@ if (fs.existsSync(rootEnv)) dotenv.config({ path: rootEnv });
 import { createSupabaseStaticClient } from "../src/utils/supabase/server";
 import { withTelemetry, TelemetryContext } from "../src/lib/telemetry";
 import { Impit } from "impit";
+import { ATS_PROVIDER_IDS } from "../src/lib/scraper/ats/urls";
 
 let linkedinSession: Impit | null = null;
 function getLinkedInClient(): Impit {
@@ -92,8 +93,8 @@ async function checkJobActive(jobId: string, provider?: string | null): Promise<
     }
   }
 
-  // 2. Direct ATS Boards (Greenhouse, Lever, Ashby)
-  if (provider === "greenhouse" || provider === "lever" || provider === "ashby") {
+  // 2. Direct ATS Boards
+  if (provider && (ATS_PROVIDER_IDS as string[]).includes(provider)) {
     // Direct ATS jobs are actively verified during ATS fetch cycles
     return true;
   }

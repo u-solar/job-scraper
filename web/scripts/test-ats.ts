@@ -11,8 +11,10 @@ import { pacing } from "../src/lib/scraper/ats/shared";
 import { softgarden } from "../src/lib/scraper/ats/softgarden";
 import { smartrecruiters } from "../src/lib/scraper/ats/smartrecruiters";
 import { workable } from "../src/lib/scraper/ats/workable";
-import { describeCompanyEntry, parseAtsUrl } from "../src/lib/scraper/ats/urls";
+import { ATS_PROVIDER_IDS, describeCompanyEntry, parseAtsUrl } from "../src/lib/scraper/ats/urls";
 import { fetchAtsJobFromUrl, scrapeTargetCompanies } from "../src/lib/scraper/ats/registry";
+import { POST as checkPost } from "../src/app/api/ats/check/route";
+import { ALL_MIGRATIONS } from "../src/lib/setup/migrations";
 import type { AtsProvider } from "../src/lib/scraper/ats/types";
 
 const providers: Record<string, AtsProvider> = { greenhouse, lever, ashby };
@@ -465,6 +467,31 @@ async function testImportByUrl() {
   assert.equal(await fetchAtsJobFromUrl("https://boards.greenhouse.io/bitpanda"), null);
   assert.equal(await fetchAtsJobFromUrl("https://apply.workable.com/huggingface"), null);
   console.log("ok  import by URL");
+
+  // Check route + stats migration.
+  pacing.wait = async () => {};
+  const n8nRoutes = {
+    "https://boards-api.greenhouse.io/v1/boards/n8n": "404",
+    "https://api.lever.co/v0/postings/n8n": "404",
+    "https://api.ashbyhq.com/posting-api/job-board/n8n": "ashby/n8n.json",
+  };
+  const check = async (routes: Record<string, string | string[]>, entry: string) =>
+    withFixtures(routes, async () =>
+      (await checkPost(new Request("http://x/api/ats/check", { method: "POST", body: JSON.stringify({ entry }) }))).json() as Promise<any>
+    );
+  const ck1 = await check(n8nRoutes, "https://jobs.ashbyhq.com/n8n");
+  assert.equal(ck1.providerId, "ashby");
+  assert.ok(ck1.openJobs > 0);
+  const ck2 = await check(n8nRoutes, "n8n"); // bare slug: GH 404, Lever 404, Ashby hit
+  assert.equal(ck2.providerId, "ashby");
+  assert.ok(ck2.openJobs > 0 && ck2.companyName);
+  const ck3 = await check({ "https://api.ashbyhq.com/posting-api/job-board/nope": "404" }, "https://jobs.ashbyhq.com/nope");
+  assert.deepStrictEqual(ck3, { supported: true, found: false, providerId: "ashby", label: "Ashby", slug: "nope" });
+  assert.equal((await check(n8nRoutes, "nope-nope")).found, false);
+  assert.deepStrictEqual(await check({}, "https://careers.globallogic.com"), { supported: false });
+  const sql = ALL_MIGRATIONS.find((m) => m.id === "20261117_01_dashboard_stats_all_ats_providers")!.sql;
+  for (const id of ATS_PROVIDER_IDS) assert.ok(sql.includes(`'${id}'`), `migration misses ${id}`);
+  console.log("ok  check route + migration");
 }
 
 main().catch((e) => {

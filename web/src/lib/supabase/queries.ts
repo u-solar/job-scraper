@@ -1,5 +1,6 @@
 import { Job, Resume, DashboardStats, ResumeThemeConfig, ResumeStyleSetting, AppSettings, CoverLetter, CoverLetterTone, JobSearchMode } from "@/types";
 import { DEFAULT_THEME_CONFIG } from "@/lib/resume-presets";
+import { ATS_PROVIDER_IDS } from "@/lib/scraper/ats/urls";
 import { createSupabaseServerClient, createSupabaseStaticClient } from "@/utils/supabase/server";
 import { unstable_cache } from "next/cache";
 import { PostgrestError } from "@supabase/supabase-js";
@@ -1207,7 +1208,7 @@ export async function getDashboardStats(
     supabase
       .from("jobs")
       .select("*", { count: "exact", head: true })
-      .in("provider", ["greenhouse", "lever", "ashby"])
+      .in("provider", ATS_PROVIDER_IDS)
       .eq("is_active", true)
       .eq("job_state", "new"),
     supabase

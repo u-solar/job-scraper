@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { AppSettings, DreamJobProfile } from "@/types";
 import { LocationCombobox } from "@/components/setup/LocationCombobox";
+import { ATS_PROVIDER_META, describeCompanyEntry } from "@/lib/scraper/ats/urls";
 import { PRESET_GEO_LOCATIONS, GeoLocationItem } from "@/lib/setup/geoLocations";
 
 interface JobSearchSettingsProps {
@@ -42,20 +43,52 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
     ...(settings.dream_job_profile || {}),
   };
 
-  const handleAddCompanySlug = () => {
-    const trimmed = companySlugInput.trim().toLowerCase();
-    if (trimmed && !targetAtsCompanies.includes(trimmed)) {
-      const updated = [...targetAtsCompanies, trimmed];
-      onChange("dream_job_profile", {
-        ...baseProfile,
-        target_ats_companies: updated,
-      });
+  const [checkResult, setCheckResult] = useState<{ entry: string; text: string; ok: boolean } | null>(null);
+
+  const entryKey = (entry: string) => {
+    const d = describeCompanyEntry(entry);
+    return d.kind === "url" ? `${d.providerId}:${d.slug}` : d.kind === "slug" ? `slug:${d.slug}` : entry;
+  };
+
+  const handleAddCompanySlug = async () => {
+    const trimmed = companySlugInput.trim();
+    if (!trimmed) return;
+    const d = describeCompanyEntry(trimmed);
+    // Only bare slugs are case-insensitive; URL paths can be case-sensitive.
+    const entry = d.kind === "slug" ? d.slug : trimmed;
+    if (targetAtsCompanies.some((e) => entryKey(e) === entryKey(entry))) {
       setCompanySlugInput("");
+      return;
     }
+    onChange("dream_job_profile", { ...baseProfile, target_ats_companies: [...targetAtsCompanies, entry] });
+    setCompanySlugInput("");
+    setCheckResult({ entry, text: "Checking…", ok: true });
+    let result: { entry: string; text: string; ok: boolean };
+    try {
+      const res = await fetch("/api/ats/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entry }),
+      });
+      const r = await res.json();
+      if (!r.supported) result = { entry, text: "Not supported – use Import Job", ok: false };
+      else if (r.found === false) result = { entry, text: "Board not found", ok: false };
+      else {
+        result = {
+          entry,
+          text: `${r.label} · ${r.openJobs} open job${r.openJobs === 1 ? "" : "s"}${r.openJobs === 0 ? " (check the company name if you expected jobs)" : ""}`,
+          ok: true,
+        };
+      }
+    } catch {
+      result = { entry, text: "Could not check this entry", ok: false };
+    }
+    setCheckResult(result);
   };
 
   const handleRemoveCompanySlug = (slug: string) => {
     const updated = targetAtsCompanies.filter((s) => s !== slug);
+    if (checkResult?.entry === slug) setCheckResult(null);
     onChange("dream_job_profile", {
       ...baseProfile,
       target_ats_companies: updated,
@@ -279,7 +312,7 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-900">Direct ATS Boards</p>
-                <p className="text-[11px] text-slate-500">Greenhouse, Lever, & Ashby company boards</p>
+                <p className="text-[11px] text-slate-500">Greenhouse, Lever, Ashby, Personio, softgarden, Recruitee, SmartRecruiters & Workable</p>
               </div>
             </div>
             <span
@@ -310,10 +343,10 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
             <div className="flex items-center justify-between">
               <div>
                 <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
-                  Direct ATS Target Companies (Greenhouse / Lever / Ashby)
+                  Company job boards
                 </label>
                 <p className="text-[11px] text-slate-500">
-                  Enter company slugs hosted on Greenhouse, Lever, or Ashby (e.g. <code>grab</code>, <code>stripe</code>, <code>figma</code>, <code>carousell</code>, <code>airwallex</code>, <code>anthropic</code>). The daily scraper queries their public job boards directly with zero rate limits.
+                  Paste a careers page or job URL from {ATS_PROVIDER_META.map((m) => m.label).join(", ")}, or a bare slug (tried on Greenhouse, Lever, then Ashby). The daily scraper queries their public job boards directly with zero rate limits.
                 </p>
               </div>
               <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
@@ -322,13 +355,23 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
             </div>
 
             <div className="flex flex-wrap gap-1.5 pt-1 min-h-[32px]">
-              {targetAtsCompanies.map((slug) => (
+              {targetAtsCompanies.map((slug) => {
+                const d = describeCompanyEntry(slug);
+                const tag = d.kind === "url" ? d.label : d.kind === "slug" ? "auto" : "unsupported";
+                return (
                 <span
                   key={slug}
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 text-xs font-semibold"
                 >
                   <Building className="w-3 h-3 text-purple-600" />
-                  <span>{slug}</span>
+                  <span>{d.kind === "url" ? d.slug : slug}</span>
+                  <span
+                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      d.kind === "unsupported" ? "bg-amber-100 text-amber-800" : "bg-white text-purple-700"
+                    }`}
+                  >
+                    {d.kind === "unsupported" ? "⚠ unsupported" : d.kind === "slug" ? "auto (slug)" : tag}
+                  </span>
                   <button
                     type="button"
                     onClick={() => handleRemoveCompanySlug(slug)}
@@ -338,10 +381,11 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </span>
-              ))}
+                );
+              })}
               {targetAtsCompanies.length === 0 && (
                 <p className="text-xs text-slate-400 italic py-1">
-                  No company slugs added yet. Type a slug (e.g. stripe, grab, figma) below and press Add.
+                  No company boards added yet. Paste a careers page URL or type a slug below and press Add.
                 </p>
               )}
             </div>
@@ -349,7 +393,8 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
             <div className="flex gap-2 max-w-md">
               <input
                 type="text"
-                placeholder="e.g. grab, stripe, figma, carousell"
+                placeholder="Paste a careers page or job URL, or a slug"
+                aria-label="Company careers page URL or slug"
                 value={companySlugInput}
                 onChange={(e) => setCompanySlugInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -369,6 +414,14 @@ export function JobSearchSettings({ settings, onChange }: JobSearchSettingsProps
                 Add Company
               </button>
             </div>
+            {checkResult && (
+              <p
+                role="status"
+                className={`text-xs font-medium ${checkResult.ok ? "text-emerald-700" : "text-amber-700"}`}
+              >
+                {checkResult.entry}: {checkResult.text}
+              </p>
+            )}
           </div>
         )}
       </div>
