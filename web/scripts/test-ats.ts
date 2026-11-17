@@ -5,6 +5,8 @@ import { GOLDEN_DIR, goldenCases, installFixtureFetch, normalizeNow } from "./fi
 import { ashby } from "../src/lib/scraper/ats/ashby";
 import { greenhouse } from "../src/lib/scraper/ats/greenhouse";
 import { lever } from "../src/lib/scraper/ats/lever";
+import { personio } from "../src/lib/scraper/ats/personio";
+import { recruitee } from "../src/lib/scraper/ats/recruitee";
 import { describeCompanyEntry, parseAtsUrl } from "../src/lib/scraper/ats/urls";
 import { scrapeTargetCompanies } from "../src/lib/scraper/ats/registry";
 import type { AtsProvider } from "../src/lib/scraper/ats/types";
@@ -148,6 +150,66 @@ async function main() {
   assert.deepStrictEqual(parseAtsUrl("https://apply.workable.com/en/acme/j/ABC123/"), { providerId: "workable", slug: "acme", jobId: "ABC123" });
   assert.deepStrictEqual(parseAtsUrl("https://apply.workable.com/ab/j/ABC123/"), { providerId: "workable", slug: "ab", jobId: "ABC123" });
   console.log("ok  registry scrape");
+
+  await testPersonioRecruitee();
+}
+
+async function testPersonioRecruitee() {
+  const PDE = "https://helpling.jobs.personio.de/xml";
+  const PCOM = "https://helpling.jobs.personio.com/xml";
+  // .de answers 404, .com serves the board
+  const comOnly = { [PDE]: "404", [PCOM]: "personio/helpling.xml" };
+  const pj = await withFixtures(comOnly, () => personio.listJobs("helpling", []));
+  assert.equal(pj.length, 1);
+  for (const j of pj) {
+    assert.match(j.job_id, /^personio_helpling_\w+/);
+    assert.ok(j.job_title && j.description && j.application_url);
+    assert.equal(j.provider, "personio");
+    assert.equal(j.company, "Helpling");
+    assert.ok(j.application_url.startsWith("https://helpling.jobs.personio.com/job/"), j.application_url);
+    assert.ok(!j.description.includes("<div"), "description is Markdown");
+  }
+  assert.equal((await withFixtures(comOnly, () => personio.listJobs("helpling", ["Product Designer"]))).length, 0);
+  assert.equal((await withFixtures(comOnly, () => personio.listJobs("helpling", [], { skipJobIds: new Set([pj[0].job_id]) }))).length, 0);
+  assert.equal((await withFixtures(comOnly, () => personio.listPostings("helpling")))!.length, 1);
+  // .de board with jobs that have no description: listed as postings, skipped as jobs
+  const deRoutes = { "https://personio.jobs.personio.de/xml": "personio/personio.xml" };
+  assert.equal((await withFixtures(deRoutes, () => personio.listPostings("personio")))!.length, 2);
+  assert.equal((await withFixtures(deRoutes, () => personio.listJobs("personio", []))).length, 0);
+  const missing = { "https://no-such-company.jobs.personio.de/xml": "404", "https://no-such-company.jobs.personio.com/xml": "404" };
+  assert.equal(await withFixtures(missing, () => personio.listPostings("no-such-company")), null);
+  assert.deepStrictEqual(await withFixtures(missing, () => personio.listJobs("no-such-company", [])), []);
+  const pd = await withFixtures(comOnly, () => personio.getJob("helpling", pj[0].job_id.split("_").pop()!));
+  assert.equal(pd?.job_id, pj[0].job_id);
+  assert.equal(pd?.provider, "personio");
+  assert.equal(await withFixtures(comOnly, () => personio.getJob("helpling", "0")), null);
+
+  const RB = "https://bunq.recruitee.com/api/offers/";
+  const rbRoutes = { [RB]: "recruitee/bunq.json" };
+  const rj = await withFixtures(rbRoutes, () => recruitee.listJobs("bunq", []));
+  assert.equal(rj.length, 5);
+  for (const j of rj) {
+    assert.match(j.job_id, /^recruitee_bunq_\d+$/);
+    assert.ok(j.job_title && j.description && j.application_url);
+    assert.equal(j.provider, "recruitee");
+    assert.equal(j.company, "bunq");
+  }
+  const rkw = await withFixtures(rbRoutes, () => recruitee.listJobs("bunq", ["Security Engineer"]));
+  assert.deepStrictEqual(rkw.map((j) => j.job_title), ["Security Engineer"]);
+  assert.equal((await withFixtures(rbRoutes, () => recruitee.listJobs("bunq", [], { limit: 2 }))).length, 2);
+  const rskip = await withFixtures(rbRoutes, () => recruitee.listJobs("bunq", [], { skipJobIds: new Set([rj[0].job_id]) }));
+  assert.deepStrictEqual(rskip.map((j) => j.job_id), rj.slice(1).map((j) => j.job_id));
+  assert.equal((await withFixtures(rbRoutes, () => recruitee.listPostings("bunq")))!.length, 5);
+  const rmissing = { "https://no-such-company.recruitee.com/api/offers/": "404" };
+  assert.equal(await withFixtures(rmissing, () => recruitee.listPostings("no-such-company")), null);
+  // R3: URL gives the offer slug; job_id must equal the one listJobs produced. Numeric id works too.
+  const sec = rj.find((j) => j.job_title === "Security Engineer")!;
+  const bySlug = await withFixtures(rbRoutes, () => recruitee.getJob("bunq", "security-engineer-3"));
+  assert.equal(bySlug?.job_id, sec.job_id);
+  assert.equal(bySlug?.company, "bunq");
+  assert.equal((await withFixtures(rbRoutes, () => recruitee.getJob("bunq", sec.job_id.split("_").pop()!)))?.job_id, sec.job_id);
+  assert.equal(await withFixtures(rbRoutes, () => recruitee.getJob("bunq", "nope")), null);
+  console.log("ok  personio + recruitee");
 }
 
 main().catch((e) => {
