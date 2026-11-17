@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateBaseResume, getUserProfileByEmail } from "@/lib/supabase/queries";
+import { upsertBaseResume, getUserProfileByEmail } from "@/lib/supabase/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -33,14 +33,8 @@ export async function PATCH(request: NextRequest) {
   try {
     const resumeData = await request.json();
 
-    const updated = await updateBaseResume(resumeData);
-
-    if (!updated) {
-      return NextResponse.json(
-        { error: "No base resume found to update." },
-        { status: 404 }
-      );
-    }
+    // Upsert so the first save from Resume Studio creates the row instead of failing.
+    const updated = await upsertBaseResume(resumeData);
 
     return NextResponse.json(updated);
   } catch (error) {
