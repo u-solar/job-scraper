@@ -8,7 +8,7 @@
 ## 1. System Overview
 
 **JobTrack** is an autonomous job discovery, AI suitability evaluation, resume customization, and ATS typesetting platform. It consists of:
-1. **TypeScript Scraping Engine (`web/src/lib/scraper/` & `web/scripts/scrape-jobs.ts`)**: Collects job listings from LinkedIn (via guest endpoints with `impit` native Chrome TLS/JA3/JA4 fingerprint impersonation), CareersFuture (typed REST API), Direct ATS job boards (Greenhouse, Lever, Ashby for target dream companies), and RemoteOK open feeds into Supabase PostgreSQL with local `node-html-markdown` conversion. Eliminates Python runtimes and pip dependencies completely.
+1. **TypeScript Scraping Engine (`web/src/lib/scraper/` & `web/scripts/scrape-jobs.ts`)**: Collects job listings from LinkedIn (via guest endpoints with `impit` native Chrome TLS/JA3/JA4 fingerprint impersonation), CareersFuture (typed REST API), Direct ATS job boards (Greenhouse, Lever, Ashby, Personio, softgarden, Recruitee, SmartRecruiters, Workable for target dream companies), and RemoteOK open feeds into Supabase PostgreSQL with local `node-html-markdown` conversion. Eliminates Python runtimes and pip dependencies completely.
 2. **Fullstack Next.js Application (`web/`)**: Provides an interactive setup wizard, master resume studio, ATS visual theme designer, job dashboard, and REST API route handlers.
 3. **TypeScript Batch Workers (`web/scripts/`)**: Autonomous worker processes for scraping, AI job scoring, custom resume generation, posting expiration checks, and master resume parsing.
 4. **Supabase Backend**: Hosts application data (`jobs`, `base_resume`, `customized_resumes`, `resume_style_settings`, `app_settings`, `linkedin_geo_locations`). Storage buckets are deprecated in favor of on-demand in-memory PDF streaming.
@@ -50,7 +50,7 @@ graph TD
    - There is **no** Flask, FastAPI, Django, or Python HTTP server in this project.
    - All REST API endpoints and server routes are Next.js Route Handlers located under [`web/src/app/api/`](web/src/app/api/).
 2. **Scraping Engine 100% in TypeScript**:
-   - Built in TypeScript under [`web/src/lib/scraper/`](web/src/lib/scraper/) and executed via [`web/scripts/scrape-jobs.ts`](web/scripts/scrape-jobs.ts) (`npm run scrape`). It uses `impit` for browser TLS (JA3/JA4) impersonation on LinkedIn, `cheerio` for fast HTML parsing, Direct ATS company board scraping (Greenhouse, Lever, Ashby), RemoteOK smart concept/synonym matching on tech-focused feeds (`?tag=engineer`, `?tag=dev`), and `node-html-markdown` for local Markdown conversion with zero LLM API cost. Direct ATS public APIs (Ashby, Greenhouse, Lever) and Schema.org `JobPosting` JSON-LD are also shared with the interactive Job Importer (`/api/jobs/import`) to reliably extract full descriptions from JavaScript-rendered SPAs.
+   - Built in TypeScript under [`web/src/lib/scraper/`](web/src/lib/scraper/) and executed via [`web/scripts/scrape-jobs.ts`](web/scripts/scrape-jobs.ts) (`npm run scrape`). It uses `impit` for browser TLS (JA3/JA4) impersonation on LinkedIn, `cheerio` for fast HTML parsing, Direct ATS company board scraping (eight platforms, one module each under [`web/src/lib/scraper/ats/`](web/src/lib/scraper/ats/); `registry.ts` resolves a `target_ats_companies` entry, either a bare slug or a careers-page URL recognised by `urls.ts`; `POST /api/ats/check` validates an entry from Job Search Settings; migration `20261117_01_dashboard_stats_all_ats_providers` extends dashboard stats to all providers), RemoteOK smart concept/synonym matching on tech-focused feeds (`?tag=engineer`, `?tag=dev`), and `node-html-markdown` for local Markdown conversion with zero LLM API cost. Direct ATS public APIs (Ashby, Greenhouse, Lever) and Schema.org `JobPosting` JSON-LD are also shared with the interactive Job Importer (`/api/jobs/import`) to reliably extract full descriptions from JavaScript-rendered SPAs.
    - Enforces a hard, non-overridable safety ceiling of 30 jobs/day per platform (`SAFE_MAX_SCRAPE_PER_SOURCE = 30`) across all active sources (LinkedIn, CareersFuture, RemoteOK, Direct ATS) to protect against guest endpoint rate-limits and IP blocking.
    - The project is fully unified in TypeScript with zero Python dependencies.
 3. **TypeScript for Application Logic & Batch Workers**:
@@ -272,6 +272,7 @@ npm run install:web      # Install web dependencies (npm --prefix web install)
 npm run scrape           # Run TypeScript scraper using settings from Supabase (impit + cheerio)
 npm run scrape:force     # Run scraper bypassing daily scraped caps and calendar day limits
 npm run test:scraper     # Run diagnostic and live parity tests on scraping engine
+npm run test:ats         # Offline fixture tests for the ATS platform modules, registry, check route and migration
 npm run scrape -- --force --source linkedin --query "Frontend Engineer" --limit 10
 
 # --- TypeScript Automation Workers ---
