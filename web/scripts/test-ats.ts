@@ -7,13 +7,16 @@ import { greenhouse } from "../src/lib/scraper/ats/greenhouse";
 import { lever } from "../src/lib/scraper/ats/lever";
 import { personio } from "../src/lib/scraper/ats/personio";
 import { recruitee } from "../src/lib/scraper/ats/recruitee";
+import { pacing } from "../src/lib/scraper/ats/shared";
+import { smartrecruiters } from "../src/lib/scraper/ats/smartrecruiters";
+import { workable } from "../src/lib/scraper/ats/workable";
 import { describeCompanyEntry, parseAtsUrl } from "../src/lib/scraper/ats/urls";
 import { scrapeTargetCompanies } from "../src/lib/scraper/ats/registry";
 import type { AtsProvider } from "../src/lib/scraper/ats/types";
 
 const providers: Record<string, AtsProvider> = { greenhouse, lever, ashby };
 
-async function withFixtures<T>(routes: Record<string, string>, fn: () => Promise<T>): Promise<T> {
+async function withFixtures<T>(routes: Record<string, string | string[]>, fn: () => Promise<T>): Promise<T> {
   const restore = installFixtureFetch(routes);
   try {
     return await fn();
@@ -152,6 +155,7 @@ async function main() {
   console.log("ok  registry scrape");
 
   await testPersonioRecruitee();
+  await testSmartRecruitersWorkable();
 }
 
 async function testPersonioRecruitee() {
@@ -234,6 +238,116 @@ async function testPersonioRecruitee() {
   assert.ok(!isNaN(Date.parse(ej[0].posted_at!)) && new Date(ej[0].posted_at!).toISOString() === ej[0].posted_at);
   assert.equal((await withFixtures(edge, () => recruitee.listPostings("bunq")))!.length, 1);
   console.log("ok  personio + recruitee");
+}
+
+/** Runs fn with fixtures installed and returns every URL requested. */
+async function recordUrls(routes: Record<string, string | string[]>, fn: () => Promise<unknown>): Promise<string[]> {
+  const urls: string[] = [];
+  await withFixtures(routes, async () => {
+    const inner = globalThis.fetch;
+    globalThis.fetch = ((input: any, init?: any) => {
+      urls.push(typeof input === "string" ? input : input.url ?? String(input));
+      return inner(input, init);
+    }) as typeof fetch;
+    try {
+      await fn();
+    } finally {
+      globalThis.fetch = inner;
+    }
+  });
+  return urls;
+}
+
+async function testSmartRecruitersWorkable() {
+  pacing.wait = async () => {}; // no real sleeping between detail calls
+
+  const SR = "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings";
+  const srRoutes = {
+    [`${SR}?limit=100&offset=0`]: "smartrecruiters/boschgroup-p1.json",
+    [`${SR}?limit=100&offset=3`]: "smartrecruiters/boschgroup-p2.json",
+    [`${SR}/744000162078719`]: "smartrecruiters/boschgroup-d1.json",
+    [`${SR}/744000162077116`]: "smartrecruiters/boschgroup-d2.json",
+  };
+  const sj = await withFixtures(srRoutes, () => smartrecruiters.listJobs("BoschGroup", [], { limit: 2 }));
+  assert.equal(sj.length, 2);
+  for (const j of sj) {
+    assert.match(j.job_id, /^smartrecruiters_boschgroup_\d+$/);
+    assert.ok(j.job_title && j.description && j.application_url);
+    assert.ok(j.application_url!.startsWith("https://jobs.smartrecruiters.com/BoschGroup/"), j.application_url);
+    assert.equal(j.provider, "smartrecruiters");
+    assert.equal(j.company, "Bosch Group");
+    assert.ok(!isNaN(Date.parse(j.posted_at!)));
+  }
+  // detail calls only for postings that pass limit / keywords / skip
+  const detailUrls = (urls: string[]) => urls.filter((u) => /\/postings\/\d+/.test(u));
+  assert.equal(detailUrls(await recordUrls(srRoutes, () => smartrecruiters.listJobs("BoschGroup", [], { limit: 2 }))).length, 2);
+  const skipFirst = new Set([sj[0].job_id]);
+  assert.equal(detailUrls(await recordUrls(srRoutes, () => smartrecruiters.listJobs("BoschGroup", [], { limit: 1, skipJobIds: skipFirst }))).length, 1);
+  const skipped = await withFixtures(srRoutes, () => smartrecruiters.listJobs("BoschGroup", ["Customer Quality Management"], { skipJobIds: new Set([sj[1].job_id]) }));
+  assert.equal(skipped.length, 0);
+  const kw = await withFixtures(srRoutes, () => smartrecruiters.listJobs("BoschGroup", ["Customer Quality Management"]));
+  assert.deepStrictEqual(kw.map((j) => j.job_id), [sj[1].job_id]);
+  // pagination: both pages are read, 3 + 2 postings
+  const sp = await withFixtures(srRoutes, () => smartrecruiters.listPostings("BoschGroup"));
+  assert.equal(sp!.length, 5);
+  assert.equal(sp![4].id, "744000162075409");
+  assert.equal(sp![0].companyName, "Bosch Group");
+  // getJob accepts a bare id or the id-title URL segment
+  const sg = await withFixtures(srRoutes, () => smartrecruiters.getJob("BoschGroup", "744000162078719-mfq-technikai-asszisztens-gyakornok"));
+  assert.equal(sg?.job_id, sj[0].job_id);
+  assert.equal(sg?.provider, "smartrecruiters");
+  // 404 / HTML / empty
+  const srMissing = { [`${SR}?limit=100&offset=0`]: "404" };
+  assert.equal(await withFixtures(srMissing, () => smartrecruiters.listPostings("BoschGroup")), null);
+  assert.deepStrictEqual(await withFixtures(srMissing, () => smartrecruiters.listJobs("BoschGroup", [])), []);
+  assert.equal(await withFixtures({ [SR]: "smartrecruiters/html.html" }, () => smartrecruiters.listPostings("BoschGroup")), null);
+  assert.deepStrictEqual(await withFixtures({ [SR]: "smartrecruiters/html.html" }, () => smartrecruiters.listJobs("BoschGroup", [])), []);
+  assert.deepStrictEqual(await withFixtures({ [SR]: "smartrecruiters/empty.json" }, () => smartrecruiters.listPostings("BoschGroup")), []);
+  assert.equal(await withFixtures({ [`${SR}/1`]: "404" }, () => smartrecruiters.getJob("BoschGroup", "1")), null);
+
+  const WL = "https://apply.workable.com/api";
+  const wlRoutes = {
+    [`${WL}/v3/accounts/huggingface/jobs`]: ["workable/huggingface-p1.json", "workable/huggingface-p2.json"],
+    [`${WL}/v2/accounts/huggingface/jobs/DB4D7C0EC8`]: "workable/huggingface-d1.json",
+    [`${WL}/v2/accounts/huggingface/jobs/F88446C814`]: "workable/huggingface-d2.json",
+  };
+  const wj = await withFixtures(wlRoutes, () => workable.listJobs("huggingface", ["Python"]));
+  assert.equal(wj.length, 2);
+  for (const j of wj) {
+    assert.match(j.job_id, /^workable_huggingface_[0-9A-F]{10}$/);
+    assert.ok(j.job_title && j.description && j.application_url);
+    assert.match(j.application_url!, /^https:\/\/apply\.workable\.com\/huggingface\/j\/[0-9A-F]{10}$/);
+    assert.equal(j.provider, "workable");
+    assert.equal(j.company, "Huggingface");
+    assert.equal(j.workplace_type, "remote");
+  }
+  const wUrls = await recordUrls(wlRoutes, () => workable.listJobs("huggingface", [], { limit: 2 }));
+  assert.equal(wUrls.filter((u) => u.includes("/v2/")).length, 2);
+  assert.equal(wUrls.filter((u) => u.includes("/v3/")).length, 2, "list pages are both requested");
+  assert.equal((await withFixtures(wlRoutes, () => workable.listJobs("huggingface", ["Python"], { skipJobIds: new Set([wj[0].job_id]) }))).length, 1);
+  // pagination: page 2 is reached through nextPage (the POST body carries the token)
+  const bodies: string[] = [];
+  await withFixtures(wlRoutes, async () => {
+    const inner = globalThis.fetch;
+    globalThis.fetch = ((input: any, init?: any) => { bodies.push(String(init?.body)); return inner(input, init); }) as typeof fetch;
+    try { await workable.listPostings("huggingface"); } finally { globalThis.fetch = inner; }
+  });
+  assert.deepStrictEqual(bodies.map((b) => JSON.parse(b).token), ["", "tok2"]);
+  const wp = await withFixtures(wlRoutes, () => workable.listPostings("huggingface"));
+  assert.equal(wp!.length, 6);
+  assert.equal(wp![0].companyName, "Huggingface");
+  const wg = await withFixtures(wlRoutes, () => workable.getJob("huggingface", "DB4D7C0EC8"));
+  assert.equal(wg?.job_id, wj[0].job_id);
+  assert.equal(wg?.provider, "workable");
+  // 404 / HTML / empty
+  const wlList = `${WL}/v3/accounts/nope/jobs`;
+  assert.equal(await withFixtures({ [wlList]: "404" }, () => workable.listPostings("nope")), null);
+  assert.deepStrictEqual(await withFixtures({ [wlList]: "404" }, () => workable.listJobs("nope", [])), []);
+  assert.equal(await withFixtures({ [wlList]: "workable/html.html" }, () => workable.listPostings("nope")), null);
+  assert.deepStrictEqual(await withFixtures({ [wlList]: "workable/html.html" }, () => workable.listJobs("nope", [])), []);
+  assert.deepStrictEqual(await withFixtures({ [wlList]: "workable/empty.json" }, () => workable.listPostings("nope")), []);
+  assert.equal(await withFixtures({ [`${WL}/v2/accounts/nope/jobs/X`]: "404" }, () => workable.getJob("nope", "X")), null);
+  console.log("ok  smartrecruiters + workable");
 }
 
 main().catch((e) => {

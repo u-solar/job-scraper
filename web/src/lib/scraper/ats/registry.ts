@@ -4,13 +4,15 @@ import { greenhouse } from "./greenhouse";
 import { lever } from "./lever";
 import { personio } from "./personio";
 import { recruitee } from "./recruitee";
+import { smartrecruiters } from "./smartrecruiters";
+import { workable } from "./workable";
 import type { AtsProvider, AtsProviderId, ListJobsOptions, SingleAtsJobDetails } from "./types";
 import { describeCompanyEntry, parseAtsUrl } from "./urls";
 
 export { ATS_PROVIDER_IDS, ATS_PROVIDER_META, describeCompanyEntry, parseAtsUrl } from "./urls";
 
 // Partial until every platform module exists; resolveCompanyEntry treats a missing one as unsupported.
-export const ATS_PROVIDERS: Partial<Record<AtsProviderId, AtsProvider>> = { greenhouse, lever, ashby, personio, recruitee };
+export const ATS_PROVIDERS: Partial<Record<AtsProviderId, AtsProvider>> = { greenhouse, lever, ashby, personio, recruitee, smartrecruiters, workable };
 
 const BARE_SLUG_ORDER = [greenhouse, lever, ashby];
 

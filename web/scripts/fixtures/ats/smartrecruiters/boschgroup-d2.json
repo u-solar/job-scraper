@@ -1,0 +1,166 @@
+{
+ "id": "744000162077116",
+ "name": "Internship 2027, Customer Quality Management (AmaP/QMM1)",
+ "uuid": "65b3cdc2-12b5-4133-b170-805f0e6e978c",
+ "jobId": "74a5e455-6fa5-416a-8149-bd95b3d06ffe",
+ "jobAdId": "0e1fc720-21c5-4ece-8852-43c1873983ca",
+ "defaultJobAd": true,
+ "refNumber": "REF300692J",
+ "company": {
+  "name": "Bosch Group",
+  "identifier": "BoschGroup"
+ },
+ "location": {
+  "city": "Amata City Rayong Industrial Estate",
+  "region": "RAYONG",
+  "country": "th",
+  "address": "7/102 Moo 4, T. Mabyangporn, Pluak Daeng",
+  "postalCode": "21140",
+  "remote": false,
+  "hybrid": false,
+  "fullLocation": "Amata City Rayong Industrial Estate, RAYONG, Thailand"
+ },
+ "customField": [
+  {
+   "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+   "fieldLabel": "Contract type",
+   "valueId": "98487475-2a49-44f5-a615-408b525b3821",
+   "valueLabel": "Limited"
+  },
+  {
+   "fieldId": "5abe28e96d8bc56863dd9746",
+   "fieldLabel": "Tariff Area",
+   "valueId": "650aec66-817c-483f-9356-bdb277613c92",
+   "valueLabel": "Thailand Local Grades"
+  },
+  {
+   "fieldId": "586a997ee4b05fd937b86098",
+   "fieldLabel": "Legal Entity(acronym)",
+   "valueId": "726f5739-bf81-4602-abd3-b6435c3b7946",
+   "valueLabel": "RBTY"
+  },
+  {
+   "fieldId": "586a99b5e4b0daa006ae1079",
+   "fieldLabel": "Working Location",
+   "valueId": "0a1e5f49-51f6-455e-9b4a-b79e69b8577c",
+   "valueLabel": "Rayong"
+  },
+  {
+   "fieldId": "5abe295a6d8bc56863dd9747",
+   "fieldLabel": "Global Salary Level",
+   "valueId": "80ae06a1-4738-48e8-8aea-4613f58ecd57",
+   "valueLabel": "Others"
+  },
+  {
+   "fieldId": "69ca83a2489188782a1e9f87",
+   "fieldLabel": "Direct Or Indirect",
+   "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+   "valueLabel": "Indirect"
+  },
+  {
+   "fieldId": "5abe29f9b60a5e486a2d9b1c",
+   "fieldLabel": "Working hours",
+   "valueId": "60756b3e-dbab-4353-ac3a-0064d2bb27d8",
+   "valueLabel": "Full-time"
+  },
+  {
+   "fieldId": "586a9995e4b0daa006ae1078",
+   "fieldLabel": "Legal Entity",
+   "valueId": "41e2e435-3809-48b0-95a4-bc508c280d81",
+   "valueLabel": "Robert Bosch Automotive Technologies (Thailand) Co., Ltd."
+  },
+  {
+   "fieldId": "691cf1c93001c782b9560ab7",
+   "fieldLabel": "Division full name",
+   "valueId": "15bcc29d-90ec-4da5-9bc5-72863bc810d9",
+   "valueLabel": "Vehicle Motion"
+  },
+  {
+   "fieldId": "5abe27936d8bc56863dd9745",
+   "fieldLabel": "Position type",
+   "valueId": "f524b939-fe55-407b-a0b0-e8f4eec28997",
+   "valueLabel": "Intern"
+  },
+  {
+   "fieldId": "COUNTRY",
+   "fieldLabel": "Country/Region",
+   "valueId": "th",
+   "valueLabel": "Thailand"
+  },
+  {
+   "fieldId": "586a971ee4b0daa006ae1077",
+   "fieldLabel": "Brands",
+   "valueId": "default",
+   "valueLabel": "Bosch Group"
+  },
+  {
+   "fieldId": "586a996ce4b05fd937b86097",
+   "fieldLabel": "Working Country",
+   "valueId": "1d953cd4-8dda-43b7-b1bd-58329836a0bc",
+   "valueLabel": "Thailand"
+  },
+  {
+   "fieldId": "586a9b22e4b05fd937b8609a",
+   "fieldLabel": "Local Grade",
+   "valueId": "afc25957-efcb-471d-a375-3f56b2f80137",
+   "valueLabel": "TH_Internship"
+  },
+  {
+   "fieldId": "586a99a5e4b05fd937b86099",
+   "fieldLabel": "Division",
+   "valueId": "CC",
+   "valueLabel": "VM"
+  }
+ ],
+ "releasedDate": "2026-11-17T13:22:25.768Z",
+ "creator": {
+  "name": "",
+  "avatarUrl": ""
+ },
+ "postingUrl": "https://jobs.smartrecruiters.com/BoschGroup/744000162077116-internship-2027-customer-quality-management-amap-qmm1-",
+ "applyUrl": "https://jobs.smartrecruiters.com/BoschGroup/744000162077116-internship-2027-customer-quality-management-amap-qmm1-?oga=true",
+ "referralUrl": "https://jobs.smartrecruiters.com/external-referrals/company/BoschGroup/publication/65b3cdc2-12b5-4133-b170-805f0e6e978c?dcr_ci=BoschGroup",
+ "jobAd": {
+  "sections": {
+   "companyDescription": {
+    "title": "Company Description",
+    "text": "<p>The <strong>Bosch Group </strong>is a global leader in technology and services, achieving annual sales of approximately 90 billion euros and employing over 400,000 associates worldwide.&#xa0;<br>\nWith operations in around 60 countries through 470 subsidiaries and regional companies, Bosch is a major player across four key business sectors: Mobility Solutions, Industrial Technology, Consumer Goods, and Energy and Building Technology. Driven by a commitment to connected living, Bosch develops innovative solutions that improve quality of life globally.</p><p><strong>Robert Bosch Automotive Technologies (Thailand) Co., Ltd.</strong> is a key player in the automotive sector, offering a wide range of products and services, including advanced braking systems, vehicle motion components, powertrain solutions, and technologies for electric and hybrid vehicles. With a focus on sustainability and innovation, Bosch Thailand supports the transition to electric mobility and the development of connected, automated, and personalized automotive technologies. The company has achieved significant growth, with a strong commitment to quality, safety, and environmental responsibility. Bosch continues to play a crucial role in Thailand\u2019s automotive industry and its efforts toward decarbonization and sustainable mobility.</p><p>We are a dynamic and rapidly growing company committed to innovation and excellence in our industry. Our team is passionate, forward-thinking, and dedicated to achieving our mission.&#xa0;<br>\nAs we continue to expand, we are seeking a vibrant and proactive talent to join our team.</p>"
+   },
+   "jobDescription": {
+    "title": "Job Description",
+    "text": "<ol><li>To support PPAP document preparation in value stream and customer window.</li><li>To support containment activity and follow up with team.</li><li>Coordinator with relevant&#xa0;department regarding the customer complaints or quality issues during safe launch activity.</li><li>Investigate parts (0-km claim, internal failure, and other failure parts) with Quality engineer and production VS team.</li></ol>"
+   },
+   "qualifications": {
+    "title": "Qualifications",
+    "text": "<ol><li>&#xa0;&#xa0;&#xa0; Studying in Bachelor Degree of Engineering or related fields</li><li>&#xa0;&#xa0;&#xa0; Proficiency in Microsoft Office (Word, Excel and PowerPoint)</li><li>&#xa0;&#xa0;&#xa0; Good at coordination and communication skills</li></ol>"
+   },
+   "additionalInformation": {
+    "title": "Additional Information",
+    "text": "<p><strong>Your advantage</strong></p><p>You get a behind the scenes look into the workings of global player - at your request outside Thailand. You are directly involved with the team and can gather practical, degree-related experience.</p><p><strong>Working condition</strong></p><p>&#xa0;&#xa0; - Monday to Friday, 8.00 am. - 5.30 pm.<br>\n&#xa0;&#xa0; - Monthly allowance and housing allowance.<br>\n&#xa0;&#xa0; - Free lunch &amp; transportation.<br>\n&#xa0;&#xa0; - Vacation eligibility : 1 day/month.</p><p>Make it happen!</p><p>Send us your application by using the I'm interested button!</p><p>Please include the following subject as below in your CV.</p><p>&#xa0;&#xa0; - Start and ending dates of internship program.<br>\n&#xa0;&#xa0; - Deadline to get confirmation from Bosch.</p><p>\"Due to High volume of candidates, only shortlisted candidate will be contracted\"</p>"
+   }
+  }
+ },
+ "active": true,
+ "visibility": "PUBLIC",
+ "industry": {
+  "id": "mechanical_engineering",
+  "label": "Mechanical Or Industrial Engineering"
+ },
+ "function": {
+  "id": "engineering",
+  "label": "Engineering"
+ },
+ "experienceLevel": {
+  "id": "internship",
+  "label": "Internship"
+ },
+ "typeOfEmployment": {
+  "id": "permanent",
+  "label": "Full-time"
+ },
+ "language": {
+  "code": "en",
+  "label": "English",
+  "labelNative": "English (US)"
+ }
+}

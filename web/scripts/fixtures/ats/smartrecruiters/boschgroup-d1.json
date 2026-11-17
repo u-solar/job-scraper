@@ -1,0 +1,173 @@
+{
+ "id": "744000162078719",
+ "name": "MFQ technikai asszisztens gyakornok",
+ "uuid": "58f6c9c0-ac45-4c78-91c2-1b2e7f8a2486",
+ "jobId": "76cb09ae-5389-4fe0-8efe-53c9c0b90d15",
+ "jobAdId": "ddff278c-b2fa-45de-bb44-b80e878ad312",
+ "defaultJobAd": true,
+ "refNumber": "REF301145P",
+ "company": {
+  "name": "Bosch Group",
+  "identifier": "BoschGroup"
+ },
+ "location": {
+  "city": "Hatvan",
+  "country": "hu",
+  "address": "Robert Bosch \u00fat",
+  "postalCode": "3000",
+  "remote": false,
+  "hybrid": true,
+  "latitude": "47.6712632",
+  "longitude": "19.647456",
+  "fullLocation": "Hatvan, , Hungary"
+ },
+ "customField": [
+  {
+   "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+   "fieldLabel": "Contract type",
+   "valueId": "1e46492b-d24f-460c-b095-38cf08a778d8",
+   "valueLabel": "Unlimited"
+  },
+  {
+   "fieldId": "5abe28e96d8bc56863dd9746",
+   "fieldLabel": "Tariff Area",
+   "valueId": "5a5f5198-846e-40f9-a392-a572a6c71e28",
+   "valueLabel": "Hungary Local Grades"
+  },
+  {
+   "fieldId": "586a997ee4b05fd937b86098",
+   "fieldLabel": "Legal Entity(acronym)",
+   "valueId": "0aded8c2-d594-4885-ac8e-4a4de1d07fc1",
+   "valueLabel": "RBHH"
+  },
+  {
+   "fieldId": "586a99b5e4b0daa006ae1079",
+   "fieldLabel": "Working Location",
+   "valueId": "fa239d3f-7877-4fba-8549-d55b5c2ad7e8",
+   "valueLabel": "Hatvan"
+  },
+  {
+   "fieldId": "5abe295a6d8bc56863dd9747",
+   "fieldLabel": "Global Salary Level",
+   "valueId": "80ae06a1-4738-48e8-8aea-4613f58ecd57",
+   "valueLabel": "Others"
+  },
+  {
+   "fieldId": "69ca83a2489188782a1e9f87",
+   "fieldLabel": "Direct Or Indirect",
+   "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+   "valueLabel": "Indirect"
+  },
+  {
+   "fieldId": "5abe29f9b60a5e486a2d9b1c",
+   "fieldLabel": "Working hours",
+   "valueId": "ff7c69f3-f89c-498c-9a0e-25f4dad301d4",
+   "valueLabel": "Full-time and/or part-time"
+  },
+  {
+   "fieldId": "586a9995e4b0daa006ae1078",
+   "fieldLabel": "Legal Entity",
+   "valueId": "fcedaf88-ca6c-4da8-b32d-f6084438ee00",
+   "valueLabel": "Robert Bosch Elektronika Gy\u00e1rt\u00f3 Kft."
+  },
+  {
+   "fieldId": "69ce86cd542ae4a67c1eb07f",
+   "fieldLabel": "HU Internship type",
+   "valueId": "cf091302-c0f4-4234-9689-363439f41e4b",
+   "valueLabel": "Intern \u2013 F\u00fcrgeDi\u00e1k"
+  },
+  {
+   "fieldId": "691cf1c93001c782b9560ab7",
+   "fieldLabel": "Division full name",
+   "valueId": "acbd0fb4-afd1-49f8-8abc-ec454a4e33bd",
+   "valueLabel": "Mobility Electronics"
+  },
+  {
+   "fieldId": "5abe27936d8bc56863dd9745",
+   "fieldLabel": "Position type",
+   "valueId": "f524b939-fe55-407b-a0b0-e8f4eec28997",
+   "valueLabel": "Intern"
+  },
+  {
+   "fieldId": "COUNTRY",
+   "fieldLabel": "Country/Region",
+   "valueId": "hu",
+   "valueLabel": "Hungary"
+  },
+  {
+   "fieldId": "586a971ee4b0daa006ae1077",
+   "fieldLabel": "Brands",
+   "valueId": "default",
+   "valueLabel": "Bosch Group"
+  },
+  {
+   "fieldId": "586a996ce4b05fd937b86097",
+   "fieldLabel": "Working Country",
+   "valueId": "feb56b03-fbfd-4998-9979-de204555c336",
+   "valueLabel": "Hungary"
+  },
+  {
+   "fieldId": "586a9b22e4b05fd937b8609a",
+   "fieldLabel": "Local Grade",
+   "valueId": "53669421-eedd-4a7a-88cd-25934379ecc3",
+   "valueLabel": "HU_ORABERES"
+  },
+  {
+   "fieldId": "586a99a5e4b05fd937b86099",
+   "fieldLabel": "Division",
+   "valueId": "AE",
+   "valueLabel": "ME"
+  }
+ ],
+ "releasedDate": "2026-11-17T13:27:57.534Z",
+ "creator": {
+  "name": "",
+  "avatarUrl": ""
+ },
+ "postingUrl": "https://jobs.smartrecruiters.com/BoschGroup/744000162078719-mfq-technikai-asszisztens-gyakornok",
+ "applyUrl": "https://jobs.smartrecruiters.com/BoschGroup/744000162078719-mfq-technikai-asszisztens-gyakornok?oga=true",
+ "referralUrl": "https://jobs.smartrecruiters.com/external-referrals/company/BoschGroup/publication/58f6c9c0-ac45-4c78-91c2-1b2e7f8a2486?dcr_ci=BoschGroup",
+ "jobAd": {
+  "sections": {
+   "companyDescription": {
+    "title": "A c\u00e9g le\u00edr\u00e1sa",
+    "text": "<p><strong>Szeretn\u00e9l \u00f6tleteiddel hasznos technol\u00f3gi\u00e1k fejleszt\u00e9s\u00e9hez hozz\u00e1j\u00e1rulni? Legyen sz\u00f3 mobilit\u00e1si megold\u00e1sokr\u00f3l, fogyaszt\u00f3i cikkekr\u0151l, ipari technol\u00f3gi\u00e1r\u00f3l, energetik\u00e1r\u00f3l vagy \u00e9p\u00edt\u00e9stechnol\u00f3gi\u00e1r\u00f3l: Vel\u00fcnk lehet\u0151s\u00e9ged ny\u00edlik arra, hogy jav\u00edts az emberek \u00e9letmin\u0151s\u00e9g\u00e9n vil\u00e1gszerte.</strong></p><p><strong>K\u00f6sz\u00f6nt\u00fcnk a Bosch vil\u00e1g\u00e1ban.</strong></p><p>Az 1998-ban alap\u00edtott hatvani telephely a Bosch csoport g\u00e9pj\u00e1rm\u0171-elektronika<strong>&#xa0;</strong>r\u00e9szleg\u00e9nek legnagyobb<strong>&#xa0;</strong>gy\u00e1rt\u00f3 k\u00f6zpontja a vil\u00e1gon. A v\u00e1llalat f\u0151 profilja a c\u00e9gcsoport mobilit\u00e1si megold\u00e1sok \u00fczlet\u00e1g\u00e1nak j\u00f6v\u0151be mutat\u00f3 term\u00e9kei k\u00f6z\u00fcl a vez\u00e9rl\u0151 elektronik\u00e1k, szenzorok, radarok \u00e9s kamerarendszerek sorozatgy\u00e1rt\u00e1sa. A hatvani strat\u00e9giai c\u00e9lja, hogy munkav\u00e1llal\u00f3i szak\u00e9rtelm\u00e9nek, valamint cs\u00facstechnol\u00f3gi\u00e1t k\u00e9pvisel\u0151 gy\u00e1rt\u00e1si megold\u00e1sainak folyamatos fejleszt\u00e9s\u00e9vel az automatiz\u00e1lt, balesetmentes \u00e9s k\u00f6rnyezetbar\u00e1t aut\u00f3z\u00e1s j\u00f6v\u0151j\u00e9ben akt\u00edv szerepet v\u00e1llaljon.</p>"
+   },
+   "jobDescription": {
+    "title": "Az \u00e1ll\u00e1s le\u00edr\u00e1sa",
+    "text": "<ul><li>M\u00e1s MFQ ter\u00fcletekkel t\u00f6rt\u00e9n\u0151 kapcsolattart\u00e1s</li><li>Gy\u00e1ri MFQ ter\u00fcleten \u00e1t\u00edvel\u0151 egyszer\u0171bb projektek bevezet\u00e9se, koordin\u00e1l\u00e1sa</li><li>MFQ oszt\u00e1lyvezet\u0151 napi m\u0171k\u00f6d\u00e9s\u00e9nek t\u00e1mogat\u00e1sa, seg\u00edt\u00e9se szervez\u00e9si feladatokban</li></ul>"
+   },
+   "qualifications": {
+    "title": "Elv\u00e1r\u00e1sok",
+    "text": "<ul><li>Akt\u00edv, vagy (25 \u00e9v alatt) passz\u00edv, nappali tagozatos hallgat\u00f3i jogviszony</li><li>Folyamatban l\u00e9v\u0151 fels\u0151fok\u00fa tanulm\u00e1nyok</li><li>Heti minimum 3 nap v\u00e1llal\u00e1sa hossz\u00fat\u00e1von, legal\u00e1bb 1 \u00e9ven kereszt\u00fcl</li><li>Halad\u00f3 MS Office ismeretek&#xa0;</li><li>Megold\u00e1sorient\u00e1lt, nyitott \u00e9s kiv\u00e1l\u00f3 kapcsolat\u00e9p\u00edt\u0151 szem\u00e9lyis\u00e9g</li><li>J\u00f3 kommunik\u00e1ci\u00f3s \u00e9s szervez\u0151k\u00e9szs\u00e9g</li><li><strong>El\u0151nyt jelent:</strong><ul><li>Angol nyelvtud\u00e1s (a napi munkav\u00e9gz\u00e9shez nem felt\u00e9tel)</li><li>PowerBI \u00e9s/vagy AutoCAD szoftverek ismerete</li><li>Mesters\u00e9ges intelligencia&#xa0;eszk\u00f6z\u00f6k ir\u00e1nti nyitotts\u00e1g \u00e9s \u00e9rdekl\u0151d\u00e9s</li></ul></li></ul>"
+   },
+   "additionalInformation": {
+    "title": "Tov\u00e1bbi inform\u00e1ci\u00f3k",
+    "text": "<p><strong>J\u00f6v\u0151beli munkahelyed az al\u00e1bbiakat k\u00edn\u00e1lja:</strong></p><ul><li>Versenyk\u00e9pes gyakornoki fizet\u00e9s</li><li>\u00datik\u00f6lts\u00e9g t\u00e1mogat\u00e1sa</li><li>Ingyenes v\u00e1llalati buszj\u00e1ratok</li><li>K\u00e9pz\u00e9seken val\u00f3 r\u00e9szv\u00e9teli lehet\u0151s\u00e9g (IT \u00e9s nyelvtanfolyamok)</li><li>Fizetett szabadnap ledolgozott \u00f3r\u00e1k szerint</li><li>Kiemelt gyakornoki program</li><li>C\u00e9ges laptop</li><li>HO lehet\u0151s\u00e9g (ter\u00fcletenk\u00e9nt elt\u00e9r\u0151, vezet\u0151i j\u00f3v\u00e1hagy\u00e1s alapj\u00e1n)</li></ul><p><strong>Mi\u00e9rt szeretnek a gyakornokok a hatvani Boschban dolgozni?</strong></p><ul><li>Elismerj\u00fck \u00e9s t\u00e1mogatjuk \u0151ket</li><li>Minden esetben sz\u00e1m\u00edthatnak vezet\u0151ik \u00e9s koll\u00e9g\u00e1ik t\u00e1mogat\u00e1s\u00e1ra</li><li>Rugalmas munkarendben v\u00e9gzik munk\u00e1jukat</li><li>Szakmai fejl\u0151d\u00e9se fontos sz\u00e1munkra</li></ul>"
+   }
+  }
+ },
+ "active": true,
+ "visibility": "PUBLIC",
+ "industry": {
+  "id": "automotive",
+  "label": "Automotive"
+ },
+ "function": {
+  "id": "administrative",
+  "label": "Administrative"
+ },
+ "experienceLevel": {
+  "id": "internship",
+  "label": "Internship"
+ },
+ "typeOfEmployment": {
+  "id": "intern",
+  "label": "Intern"
+ },
+ "language": {
+  "code": "hu",
+  "label": "Hungarian",
+  "labelNative": "magyar"
+ }
+}

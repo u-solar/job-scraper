@@ -1,0 +1,287 @@
+{
+ "offset": 3,
+ "limit": 100,
+ "totalFound": 5,
+ "content": [
+  {
+   "id": "744000162073604",
+   "name": "Internship 2027, Value Stream Quality Management (AmaP/QMM1)",
+   "uuid": "23fc8f94-73db-42ad-919e-3aa3d2c71600",
+   "jobAdId": "40431500-9458-49f3-bd82-344f93495e49",
+   "defaultJobAd": true,
+   "refNumber": "REF300691C",
+   "company": {
+    "identifier": "BoschGroup",
+    "name": "Bosch Group"
+   },
+   "releasedDate": "2026-11-17T13:15:55.902Z",
+   "location": {
+    "city": "Amata City Rayong Industrial Estate",
+    "region": "RAYONG",
+    "country": "th",
+    "address": "7/102 Moo 4 Mabyangporn, Pluak Daeng, Rayong",
+    "postalCode": "21140",
+    "remote": false,
+    "hybrid": false,
+    "fullLocation": "Amata City Rayong Industrial Estate, RAYONG, Thailand"
+   },
+   "industry": {
+    "id": "mechanical_engineering",
+    "label": "Mechanical Or Industrial Engineering"
+   },
+   "department": {},
+   "function": {
+    "id": "engineering",
+    "label": "Engineering"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "internship",
+    "label": "Internship"
+   },
+   "customField": [
+    {
+     "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+     "fieldLabel": "Contract type",
+     "valueId": "98487475-2a49-44f5-a615-408b525b3821",
+     "valueLabel": "Limited"
+    },
+    {
+     "fieldId": "5abe28e96d8bc56863dd9746",
+     "fieldLabel": "Tariff Area",
+     "valueId": "650aec66-817c-483f-9356-bdb277613c92",
+     "valueLabel": "Thailand Local Grades"
+    },
+    {
+     "fieldId": "586a997ee4b05fd937b86098",
+     "fieldLabel": "Legal Entity(acronym)",
+     "valueId": "8535265e-4a19-4fd4-9d49-d2bfb2bff80e",
+     "valueLabel": "RBTA"
+    },
+    {
+     "fieldId": "586a99b5e4b0daa006ae1079",
+     "fieldLabel": "Working Location",
+     "valueId": "0a1e5f49-51f6-455e-9b4a-b79e69b8577c",
+     "valueLabel": "Rayong"
+    },
+    {
+     "fieldId": "5abe295a6d8bc56863dd9747",
+     "fieldLabel": "Global Salary Level",
+     "valueId": "80ae06a1-4738-48e8-8aea-4613f58ecd57",
+     "valueLabel": "Others"
+    },
+    {
+     "fieldId": "69ca83a2489188782a1e9f87",
+     "fieldLabel": "Direct Or Indirect",
+     "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+     "valueLabel": "Indirect"
+    },
+    {
+     "fieldId": "5abe29f9b60a5e486a2d9b1c",
+     "fieldLabel": "Working hours",
+     "valueId": "60756b3e-dbab-4353-ac3a-0064d2bb27d8",
+     "valueLabel": "Full-time"
+    },
+    {
+     "fieldId": "586a9995e4b0daa006ae1078",
+     "fieldLabel": "Legal Entity",
+     "valueId": "4e29d0b1-2ed5-4d9f-b76d-c1ab1edfec9f",
+     "valueLabel": "Bosch Automotive Thailand Co. Ltd."
+    },
+    {
+     "fieldId": "691cf1c93001c782b9560ab7",
+     "fieldLabel": "Division full name",
+     "valueId": "15bcc29d-90ec-4da5-9bc5-72863bc810d9",
+     "valueLabel": "Vehicle Motion"
+    },
+    {
+     "fieldId": "5abe27936d8bc56863dd9745",
+     "fieldLabel": "Position type",
+     "valueId": "f524b939-fe55-407b-a0b0-e8f4eec28997",
+     "valueLabel": "Intern"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "th",
+     "valueLabel": "Thailand"
+    },
+    {
+     "fieldId": "586a971ee4b0daa006ae1077",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "Bosch Group"
+    },
+    {
+     "fieldId": "586a996ce4b05fd937b86097",
+     "fieldLabel": "Working Country",
+     "valueId": "1d953cd4-8dda-43b7-b1bd-58329836a0bc",
+     "valueLabel": "Thailand"
+    },
+    {
+     "fieldId": "586a9b22e4b05fd937b8609a",
+     "fieldLabel": "Local Grade",
+     "valueId": "afc25957-efcb-471d-a375-3f56b2f80137",
+     "valueLabel": "TH_Internship"
+    },
+    {
+     "fieldId": "586a99a5e4b05fd937b86099",
+     "fieldLabel": "Division",
+     "valueId": "CC",
+     "valueLabel": "VM"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings/744000162073604",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "744000162075409",
+   "name": "Werkstudentent\u00e4tigkeit - Marketing und Verkauf",
+   "uuid": "42bbd0f8-afd3-4213-b7eb-d6ccbbf98592",
+   "jobAdId": "0c10b831-680f-407a-9d6c-862f807917c5",
+   "defaultJobAd": true,
+   "refNumber": "REF300762T",
+   "company": {
+    "identifier": "BoschGroup",
+    "name": "Bosch Group"
+   },
+   "releasedDate": "2026-11-17T13:12:37.905Z",
+   "location": {
+    "city": "Urdorf",
+    "region": "ZH",
+    "country": "ch",
+    "address": "In der Luberzen 29",
+    "postalCode": "8902",
+    "remote": false,
+    "hybrid": false,
+    "latitude": "47.394715",
+    "longitude": "8.424455499999999",
+    "fullLocation": "Urdorf, ZH, Switzerland"
+   },
+   "industry": {
+    "id": "mechanical_engineering",
+    "label": "Mechanical Or Industrial Engineering"
+   },
+   "department": {},
+   "function": {
+    "id": "marketing",
+    "label": "Marketing"
+   },
+   "typeOfEmployment": {
+    "id": "contract",
+    "label": "Contract"
+   },
+   "experienceLevel": {
+    "id": "entry_level",
+    "label": "Entry Level"
+   },
+   "customField": [
+    {
+     "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+     "fieldLabel": "Contract type",
+     "valueId": "98487475-2a49-44f5-a615-408b525b3821",
+     "valueLabel": "Limited"
+    },
+    {
+     "fieldId": "5abe28e96d8bc56863dd9746",
+     "fieldLabel": "Tariff Area",
+     "valueId": "7becffdc-3742-48a8-88e9-a97bac7325cb",
+     "valueLabel": "Switzerland Local Grades"
+    },
+    {
+     "fieldId": "586a997ee4b05fd937b86098",
+     "fieldLabel": "Legal Entity(acronym)",
+     "valueId": "6ad5c1c5-4669-4a06-99d9-344d36f4d8af",
+     "valueLabel": "RBCH"
+    },
+    {
+     "fieldId": "586a99b5e4b0daa006ae1079",
+     "fieldLabel": "Working Location",
+     "valueId": "9338391d-e5c8-4131-a786-ec1867122262",
+     "valueLabel": "Urdorf"
+    },
+    {
+     "fieldId": "5abe295a6d8bc56863dd9747",
+     "fieldLabel": "Global Salary Level",
+     "valueId": "427b1359-5057-4375-a2ae-6c649782296d",
+     "valueLabel": "Experienced/ Middle Tariff"
+    },
+    {
+     "fieldId": "69ca83a2489188782a1e9f87",
+     "fieldLabel": "Direct Or Indirect",
+     "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+     "valueLabel": "Indirect"
+    },
+    {
+     "fieldId": "5abe29f9b60a5e486a2d9b1c",
+     "fieldLabel": "Working hours",
+     "valueId": "36d67fff-2442-44b6-b51d-8070aeaca6e6",
+     "valueLabel": "Part-time"
+    },
+    {
+     "fieldId": "586a9995e4b0daa006ae1078",
+     "fieldLabel": "Legal Entity",
+     "valueId": "a6315c7c-ad1d-4553-ae87-0404bfb0d2f4",
+     "valueLabel": "Robert Bosch AG"
+    },
+    {
+     "fieldId": "691cf1c93001c782b9560ab7",
+     "fieldLabel": "Division full name",
+     "valueId": "b2e47e43-790d-4acb-871a-2ed61d7177ba",
+     "valueLabel": "Mobility Aftermarket"
+    },
+    {
+     "fieldId": "5abe27936d8bc56863dd9745",
+     "fieldLabel": "Position type",
+     "valueId": "e4a3c0db-920d-4356-8ce0-c0b44a54e497",
+     "valueLabel": "Working student"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "ch",
+     "valueLabel": "Switzerland"
+    },
+    {
+     "fieldId": "586a971ee4b0daa006ae1077",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "Bosch Group"
+    },
+    {
+     "fieldId": "586a996ce4b05fd937b86097",
+     "fieldLabel": "Working Country",
+     "valueId": "0ee2dfee-c6d9-490e-887b-26f23922bf3f",
+     "valueLabel": "Switzerland"
+    },
+    {
+     "fieldId": "586a9b22e4b05fd937b8609a",
+     "fieldLabel": "Local Grade",
+     "valueId": "f5dacc22-f3fc-4d44-acb3-ed8cd2c8b7cb",
+     "valueLabel": "CH_RBCH_00"
+    },
+    {
+     "fieldId": "586a99a5e4b05fd937b86099",
+     "fieldLabel": "Division",
+     "valueId": "AA",
+     "valueLabel": "MA"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings/744000162075409",
+   "language": {
+    "code": "de",
+    "label": "German",
+    "labelNative": "Deutsch"
+   }
+  }
+ ]
+}

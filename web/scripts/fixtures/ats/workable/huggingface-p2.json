@@ -1,0 +1,71 @@
+{
+ "results": [
+  {
+   "id": 5851152,
+   "shortcode": "81B46579FE",
+   "title": "Open-Source Machine Learning Engineer - EMEA Remote",
+   "remote": true,
+   "location": {
+    "city": "Paris",
+    "country": "France",
+    "countryCode": "FR",
+    "region": "\u00cele-de-France"
+   },
+   "locations": [
+    {
+     "city": "Paris",
+     "country": "France",
+     "countryCode": "FR",
+     "hidden": false,
+     "region": "\u00cele-de-France"
+    }
+   ],
+   "state": "published",
+   "isInternal": false,
+   "code": "",
+   "published": "2026-05-29T00:00:00.000Z",
+   "type": "full",
+   "language": "en",
+   "department": [
+    "Open Source"
+   ],
+   "accountUid": "940cf17f-c078-40ac-95e8-07704e754048",
+   "approvalStatus": "approved",
+   "workplace": "remote"
+  },
+  {
+   "id": 2769505,
+   "shortcode": "0BD8C06DB3",
+   "title": "Wild Card",
+   "remote": true,
+   "location": {
+    "city": "",
+    "country": "United States",
+    "countryCode": "US",
+    "region": null
+   },
+   "locations": [
+    {
+     "city": "",
+     "country": "United States",
+     "countryCode": "US",
+     "hidden": false,
+     "region": null
+    }
+   ],
+   "state": "published",
+   "isInternal": false,
+   "code": "",
+   "published": "2024-10-17T00:00:00.000Z",
+   "type": "full",
+   "language": "en",
+   "department": [
+    "Wild Card"
+   ],
+   "accountUid": "940cf17f-c078-40ac-95e8-07704e754048",
+   "approvalStatus": "approved",
+   "workplace": "remote"
+  }
+ ],
+ "total": 6
+}

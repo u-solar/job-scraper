@@ -9,14 +9,19 @@ export const GOLDEN_DIR = path.join(FIXTURE_DIR, "golden");
  * (longest prefix wins). A route mapped to "404" answers 404; an unmatched URL throws.
  * Fixture paths are relative to this directory. Returns a restore function.
  */
-export function installFixtureFetch(routes: Record<string, string>): () => void {
+export function installFixtureFetch(routes: Record<string, string | string[]>): () => void {
   const original = globalThis.fetch;
   const prefixes = Object.keys(routes).sort((a, b) => b.length - a.length);
+  const served: Record<string, number> = {};
   globalThis.fetch = (async (input: RequestInfo | URL) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     const prefix = prefixes.find((p) => url.startsWith(p));
     if (!prefix) throw new Error(`installFixtureFetch: no fixture route for ${url}`);
-    const target = routes[prefix];
+    // An array answers successive calls in order (paginated POST endpoints share one URL); the last repeats.
+    const entry = routes[prefix];
+    const n = served[prefix] ?? 0;
+    served[prefix] = n + 1;
+    const target = Array.isArray(entry) ? entry[Math.min(n, entry.length - 1)] : entry;
     if (target === "404") return new Response("not found", { status: 404 });
     const body = fs.readFileSync(path.join(FIXTURE_DIR, target), "utf8");
     return new Response(body, { status: 200, headers: { "Content-Type": "application/json" } });

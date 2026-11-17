@@ -78,3 +78,6 @@ export function workplaceFromText(title: string, loc: string, markdown: string):
 
 export const LIST_TIMEOUT_MS = 20000;
 export const DETAIL_TIMEOUT_MS = 15000;
+
+/** Pause between per-job detail calls (300-800 ms). Tests replace `wait` so the suite does not sleep. */
+export const pacing = { wait: (): Promise<void> => new Promise((r) => setTimeout(r, 300 + Math.random() * 500)) };
